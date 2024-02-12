@@ -1,6 +1,13 @@
+import { CalendarHeader } from "Components/CalendarHeader";
+import { CalendarDays } from "Components/CalendarDays";
+import { CalendarCells } from "Components/CalendarCells";
 
 export const Calendar = () => {
     return (
-        <div>나는 캘린더 ~</div>
-    )
+        <>
+            <CalendarHeader/>
+            <CalendarDays/>
+            <CalendarCells/>
+        </>
+    );
 }
