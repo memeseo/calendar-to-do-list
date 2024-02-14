@@ -3,6 +3,7 @@ import { CalendarDays } from "Components/CalendarDays";
 import { CalendarCells } from "Components/CalendarCells";
 import { useState } from "react";
 import { addMonths, format, subMonths } from "date-fns"
+import { CalendarWrapper } from 'asset/Calendar';
 
 export const Calendar = () => {
     const [currentMonth, setCurrentMonth] = useState(new Date()),
@@ -14,7 +15,9 @@ export const Calendar = () => {
         <>
             <CalendarHeader currentMonth={currentMonth} preMonth={preMonth} nextMonth={nextMonth} setToday={setToday}/>
             <CalendarDays/>
-            <CalendarCells/>
+            <CalendarWrapper>
+                <CalendarCells/>
+            </CalendarWrapper>
         </>
     );
 }

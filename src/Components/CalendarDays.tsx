@@ -1,5 +1,15 @@
+import {DaysWrapper} from 'asset/CalendarDays';
+
 export const CalendarDays = () => {
+    const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
+
     return (
-        <div>나는 Days</div>
+        <DaysWrapper>
+            {daysOfWeek.map((day:string) => (
+                <div key={day}>
+                    <>{day}</>
+                </div>
+            ))}
+        </DaysWrapper>
     )
 }
