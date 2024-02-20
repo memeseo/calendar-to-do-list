@@ -17,14 +17,15 @@ export const CalendarModalWrapper = styled(motion.form)`
     padding : 5%;
 `;
 
-export const ModalTop = styled.div`
+export const ModalTop = styled.div<{ isError: boolean}>`
     width : 100%;
     height: 15%;
 
     input{
         width : 100%;
         height : 100%;
-        border : none;
+        border : ${(props)=> props.isError ? "2px solid red" : "none"};
+        border-radius: 5px;
         max-width: 100%;
         white-space: pre-wrap;
         word-break: break-word;
@@ -110,14 +111,15 @@ export const ModalTag = styled.div`
     }
 `;
 
-export const ModalContents = styled.div`
+export const ModalContents = styled.div<{isError:boolean}>`
     width : 100%;
     height: 52%;
     border-top : 1px solid rgba(55, 53, 47, 0.15);
     margin-top : 3%;
 
     textarea{
-        border: none;
+        border : ${(props)=> props.isError ? "2px solid red" : "none"};
+        border-radius: 5px;
         width : 100%;
         height : 100%;
         resize: none;
@@ -177,4 +179,11 @@ export const Overley = styled(motion.div)`
     height : 100%;
     background-color : rgba(0,0,0,0.5);
     opacity : 0;
+`;
+
+export const ErrorMessage = styled.div`
+    color : red;
+    font-size: 12px;
+    font-weight: 400;
+    padding : 1% 0;
 `;
