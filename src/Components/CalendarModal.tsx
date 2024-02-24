@@ -2,10 +2,11 @@
 import { AnimatePresence, useViewportScroll} from "framer-motion";
 import { format} from 'date-fns';
 import { useForm } from 'react-hook-form';
-import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalContents, ModalSubmit, ErrorMessage} from 'asset/CalendarModal';
+import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalContents, ModalSubmit, ErrorMessage, CreateTagWrapper} from 'asset/CalendarModal';
 import { FaCalendarDays } from "react-icons/fa6";
 import { FaHashtag } from "react-icons/fa";
 import { CalenderCell } from 'model/CalendarCell';
+import { useState } from "react";
 
 interface Props {
     isModalOpen : boolean;
@@ -22,6 +23,7 @@ interface IForm {
 export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Props) => {
     const { scrollY } = useViewportScroll();
     const { register, handleSubmit, formState: { errors }} = useForm<IForm>();
+    const [isTagInput, setTagInput] = useState(false);
 
     const onValid = (data:IForm) => {
         console.log('data ', data);
@@ -63,7 +65,20 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                                 <div className="title">
                                     <FaHashtag/> 태그
                                 </div>
-                                <div className="contents"></div>
+                                <div className="contents" onClick={()=>setTagInput((prevState)=> !prevState)}>
+                                    {
+                                        !isTagInput ? <div className="empty-tag-wrapper">비어 있음</div> : (
+                                            <CreateTagWrapper>
+                                                <input placeholder="태그를 선택하거나 생성해 주세요."></input>
+                                                <div>
+                                                    <div><span>Tag1</span></div>
+                                                </div>
+                                            </CreateTagWrapper>
+                                            
+                                        )
+                                    }
+                                    
+                                </div>
                             </ModalTag>
                             <ModalContents isError={errors.hasOwnProperty("contents")}>
                                 <textarea placeholder="내용을 입력해 주세요." {...register("contents", { maxLength : {value : 300, message : "300자 이하로 입력해 주세요."} })}></textarea>

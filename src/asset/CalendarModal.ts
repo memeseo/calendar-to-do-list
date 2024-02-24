@@ -19,7 +19,7 @@ export const CalendarModalWrapper = styled(motion.form)`
 
 export const ModalTop = styled.div<{ isError: boolean}>`
     width : 100%;
-    height: 15%;
+    height: 13%;
 
     input{
         width : 100%;
@@ -46,7 +46,7 @@ export const ModalTop = styled.div<{ isError: boolean}>`
 
 export const ModalDate = styled.div`
     width : 100%;
-    height: 5%;
+    height: 6%;
     
     div{
         display: flex;
@@ -80,7 +80,7 @@ export const ModalDate = styled.div`
 
 export const ModalTag = styled.div`
     width : 100%;
-    height: 5%;
+    height: 6%;
 
     div{
         display: flex;
@@ -100,14 +100,46 @@ export const ModalTag = styled.div`
         float: left;
     }
     .contents{
+        padding : 0 2%;
         width : 75%;
         height: 100%;
         float: right;
         cursor: pointer;
+        .empty-tag-wrapper{
+            color : rgb(155,154,151);
+        }
         &:hover{
             background-color: rgb(55, 53, 47, 0.08);
             border-radius: 5px;
         }
+    }
+`;
+
+export const CreateTagWrapper = styled.div`
+    z-index: 1;
+    width : 100%;
+    height : 80px;
+    border-radius: 5px;
+    flex-direction: column;
+    align-self: stretch;
+  
+    box-shadow: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px,
+                rgba(15, 15, 15, 0.1) 0px 3px 6px,
+                rgba(15, 15, 15, 0.2) 0px 9px 24px;
+    input {
+        
+        box-shadow: rgba(55, 53, 47, 0.16) 0px -1px inset;
+        border : none;
+        outline: none;
+        width : 100%;
+        height: 100%;
+        border-radius: 5px;
+        background-color: rgb(247,247,245);
+        padding : 0 2%;
+    }
+    div{
+        width : 100%;
+        height: 100%; 
     }
 `;
 
