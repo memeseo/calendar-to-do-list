@@ -4,12 +4,15 @@ import { useState } from 'react';
 import { format } from 'date-fns';
 import { motion } from "framer-motion";
 import { CalenderCell } from 'model/CalendarCell';
-
+import { Tag } from 'model/Tag';
 interface Props {
     day : {
-        currentMonth : Date,
-        startDate : Date
-        isCurrentMoth(): boolean
+        currentMonth : Date;
+        startDate : Date;
+        title : string;
+        tags : Tag[];
+        contents : string;
+        isCurrentMoth(): boolean;
     };
     index : number;
     onDateClick(day: CalenderCell): void

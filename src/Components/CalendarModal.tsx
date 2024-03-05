@@ -2,11 +2,12 @@
 import { AnimatePresence, useViewportScroll} from "framer-motion";
 import { format} from 'date-fns';
 import { useForm } from 'react-hook-form';
-import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalContents, ModalSubmit, ErrorMessage, CreateTagWrapper} from 'asset/CalendarModal';
+import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalContents, ModalSubmit, ErrorMessage, CreateTagWrapper, TagList} from 'asset/CalendarModal';
 import { FaCalendarDays } from "react-icons/fa6";
 import { FaHashtag } from "react-icons/fa";
 import { CalenderCell } from 'model/CalendarCell';
 import { useState } from "react";
+import { Tag } from "./CelendarTag";
 
 interface Props {
     isModalOpen : boolean;
@@ -26,7 +27,33 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
     const [isTagInput, setTagInput] = useState(false);
 
     const onValid = (data:IForm) => {
+        
+        
         console.log('data ', data);
+    }
+
+    const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        if(isTagInput) {
+            event.preventDefault();
+        };
+        
+        handleSubmit(onValid)
+    }
+
+    const setTagInputState = (event: React.MouseEvent<HTMLElement>) => {
+        const className = (event.target as HTMLDivElement).className;
+        const classList = (event.target as HTMLDivElement).classList;
+        console.log('Class name:', className);
+        console.log('Class name:', classList, ' / ', classList.contains(className));
+        
+        ['empty-tag-wrapper', 'submit-button'].includes(className) ? setTagInput(true) : setTagInput(false);
+    }
+
+    const createTag = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        event.stopPropagation();
+        if(event.key === "Enter") {
+            console.log('!!!!!!!!!')
+        } 
     }
 
     return (
@@ -40,6 +67,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                             animate={{ opacity: 1 }}/>
 
                         <CalendarModalWrapper
+                            onClick={setTagInputState}
                             exit={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             style={{ top: scrollY.get() + 100 }}
@@ -61,18 +89,20 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                                 </div>
                                 <div className="contents">{selectedDate ? format(selectedDate.startDate, 'yyyy M월 d일') : null}</div>
                             </ModalDate>
-                            <ModalTag>
+                            <ModalTag isTagInput={isTagInput}>
                                 <div className="title">
                                     <FaHashtag/> 태그
                                 </div>
-                                <div className="contents" onClick={()=>setTagInput((prevState)=> !prevState)}>
+                                <div className="contents tag-input">
                                     {
-                                        !isTagInput ? <div className="empty-tag-wrapper">비어 있음</div> : (
+                                        !isTagInput ? <div className="empty-tag-wrapper" onClick={setTagInputState}>비어 있음</div> : (
                                             <CreateTagWrapper>
-                                                <input placeholder="태그를 선택하거나 생성해 주세요."></input>
-                                                <div>
-                                                    <div><span>Tag1</span></div>
-                                                </div>
+                                                <input placeholder="태그를 선택하거나 생성해 주세요."
+                                                    onClick={(event) => event.stopPropagation()}
+                                                    onKeyDown={createTag}></input>
+                                                <TagList >
+                                                    <Tag/>
+                                                </TagList>
                                             </CreateTagWrapper>
                                             
                                         )

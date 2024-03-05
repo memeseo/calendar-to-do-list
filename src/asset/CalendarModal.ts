@@ -78,38 +78,42 @@ export const ModalDate = styled.div`
     }
 `;
 
-export const ModalTag = styled.div`
+export const ModalTag = styled.div<{ isTagInput: boolean}>`
     width : 100%;
     height: 6%;
 
     div{
-        display: flex;
         align-items: center;
         font-size: 14px;
         font-weight: 350;
     }
+
     .title{
         svg{
             padding : 1px;
             margin-right : 3%;
             color : rgba(55, 53, 47, 0.45);
         }
+        display: inline-flex; 
         color : rgba(55, 53, 47, 0.65);
         width : 25%;
         height: 100%;
         float: left;
     }
+
     .contents{
+        display: inline-flex; 
         padding : 0 2%;
         width : 75%;
         height: 100%;
         float: right;
-        cursor: pointer;
+        cursor: ${(props)=> props.isTagInput ? 'auto' : 'pointer'};
         .empty-tag-wrapper{
+            width : 100%;
             color : rgb(155,154,151);
         }
         &:hover{
-            background-color: rgb(55, 53, 47, 0.08);
+            background-color: ${(props)=> props.isTagInput ? 'none' : 'rgb(55, 53, 47, 0.08)'};
             border-radius: 5px;
         }
     }
@@ -118,28 +122,74 @@ export const ModalTag = styled.div`
 export const CreateTagWrapper = styled.div`
     z-index: 1;
     width : 100%;
-    height : 80px;
+    height : 100%;
     border-radius: 5px;
-    flex-direction: column;
-    align-self: stretch;
-  
     box-shadow: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px,
                 rgba(15, 15, 15, 0.1) 0px 3px 6px,
                 rgba(15, 15, 15, 0.2) 0px 9px 24px;
     input {
-        
         box-shadow: rgba(55, 53, 47, 0.16) 0px -1px inset;
         border : none;
         outline: none;
         width : 100%;
         height: 100%;
-        border-radius: 5px;
+        border-radius: 5px, 0px, 5px, 0px;
         background-color: rgb(247,247,245);
         padding : 0 2%;
+        &::placeholder{
+            color: rgba(55, 53, 47, 0.5);
+        }
     }
-    div{
-        width : 100%;
-        height: 100%; 
+`;
+
+export const TagList = styled.div`
+    z-index: 2;
+    display: block;
+    box-shadow: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px,
+                rgba(15, 15, 15, 0.1) 0px 3px 6px,
+                rgba(15, 15, 15, 0.2) 0px 9px 24px;
+    border-end-start-radius: 5px;
+    border-bottom-right-radius: 5px;
+    width : 100%;
+    min-height : 100%;
+    max-height: 300px;
+    overflow-y : auto;
+    background-color: white;
+    padding : 0 1%;
+
+    .tagWrapper{
+        border-radius: 5px;
+        height : 28px;
+        padding : 0 2%;
+        margin : 3px 0;
+        display:flex;
+        align-items:center;
+        &:hover {
+            background: rgba(55, 53, 47, 0.08);
+        }
+        .tagName{
+            span{
+                font-size: 12px;
+                display: inline-block;
+                line-height: 100%;
+                height: 100%;
+                background-color: rgb(219, 237, 219);
+                padding : 0 2%;
+                padding-top : 2%;
+                border-radius: 5%;
+            }
+       
+            height: 100%;
+            width : 95%;
+            float: left;
+        }
+        svg{
+            width : 5%;
+            float: right;
+            font-size: 20px;
+            color: rgba(55, 53, 47, 0.45);
+        }
+
     }
 `;
 
