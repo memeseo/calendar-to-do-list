@@ -7,7 +7,8 @@ import { FaCalendarDays } from "react-icons/fa6";
 import { FaHashtag } from "react-icons/fa";
 import { CalenderCell } from 'model/CalendarCell';
 import { useState } from "react";
-import { Tag } from "./CelendarTag";
+import { CelendarTag } from "Components/CelendarTag";
+import { Tag } from 'model/Tag';
 
 interface Props {
     isModalOpen : boolean;
@@ -25,35 +26,31 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
     const { scrollY } = useViewportScroll();
     const { register, handleSubmit, formState: { errors }} = useForm<IForm>();
     const [isTagInput, setTagInput] = useState(false);
+    const [tagName, setTagName] = useState("");
 
     const onValid = (data:IForm) => {
-        
-        
-        console.log('data ', data);
-    }
-
-    const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        if(isTagInput) {
-            event.preventDefault();
-        };
-        
-        handleSubmit(onValid)
+        console.log('onValid ', data);
     }
 
     const setTagInputState = (event: React.MouseEvent<HTMLElement>) => {
         const className = (event.target as HTMLDivElement).className;
-        const classList = (event.target as HTMLDivElement).classList;
-        console.log('Class name:', className);
-        console.log('Class name:', classList, ' / ', classList.contains(className));
-        
-        ['empty-tag-wrapper', 'submit-button'].includes(className) ? setTagInput(true) : setTagInput(false);
+
+        ['empty-tag-wrapper'].includes(className) ? setTagInput(true) : setTagInput(false);
     }
 
+    const [tagList, setTagList] = useState<Tag[]>([]);
     const createTag = (event: React.KeyboardEvent<HTMLInputElement>) => {
         event.stopPropagation();
         if(event.key === "Enter") {
-            console.log('!!!!!!!!!')
+            const tag = new Tag(tagName, getColor());
+            setTagName('');
+            setTagList([...tagList, tag]);
         } 
+    }
+
+    const getColor = () => {
+        const colors = ["233,233,232", "227,226,224", "236,225,219", "246,223,204", "251,236,204", "223,236,221", "214,229,238", "230,223,237", "242,25,233", "251,227,222"];
+        return colors[Math.floor(Math.random() * colors.length)];
     }
 
     return (
@@ -72,6 +69,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                             animate={{ opacity: 1 }}
                             style={{ top: scrollY.get() + 100 }}
                             onSubmit={handleSubmit(onValid)}
+                            onKeyPress={(e:React.KeyboardEvent<HTMLElement>) => { e.key === 'Enter' && e.preventDefault(); }}
                         >
                             <ModalTop isError={errors.hasOwnProperty("title")}>
                                 <input {...register("title", {required : "제목은 필수 입력값 입니다.", maxLength : {value : 30, message : "30자 이하로 입력해 주세요."}})} type="text" placeholder='제목을 입력해 주세요.'></input>
@@ -98,10 +96,12 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                                         !isTagInput ? <div className="empty-tag-wrapper" onClick={setTagInputState}>비어 있음</div> : (
                                             <CreateTagWrapper>
                                                 <input placeholder="태그를 선택하거나 생성해 주세요."
+                                                    value={tagName}
+                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>)=>setTagName(event.target.value)}
                                                     onClick={(event) => event.stopPropagation()}
                                                     onKeyDown={createTag}></input>
                                                 <TagList >
-                                                    <Tag/>
+                                                    <CelendarTag/>
                                                 </TagList>
                                             </CreateTagWrapper>
                                             

@@ -1,6 +1,6 @@
 import { IoEllipsisHorizontalCircle } from "react-icons/io5";
 
-export const Tag = () => {
+export const CelendarTag = () => {
    return (
         <>
             <div className="tagWrapper">
