@@ -6,7 +6,7 @@ import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalConte
 import { FaCalendarDays } from "react-icons/fa6";
 import { FaHashtag } from "react-icons/fa";
 import { CalenderCell } from 'model/CalendarCell';
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { CelendarTag } from "Components/CelendarTag";
 import { Tag } from 'model/Tag';
 
@@ -41,13 +41,14 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
     const [tagList, setTagList] = useState<Tag[]>([]);
     const createTag = (event: React.KeyboardEvent<HTMLInputElement>) => {
         event.stopPropagation();
-        if(event.key === "Enter") {
+
+        if(event.key === "Enter" && event.nativeEvent.isComposing === false) {
             const tag = new Tag(tagName, getColor());
-            setTagName('');
             setTagList([...tagList, tag]);
+            setTagName('');
         } 
     }
-
+    
     const getColor = () => {
         const colors = ["233,233,232", "227,226,224", "236,225,219", "246,223,204", "251,236,204", "223,236,221", "214,229,238", "230,223,237", "242,25,233", "251,227,222"];
         return colors[Math.floor(Math.random() * colors.length)];
@@ -97,11 +98,18 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                                             <CreateTagWrapper>
                                                 <input placeholder="태그를 선택하거나 생성해 주세요."
                                                     value={tagName}
-                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>)=>setTagName(event.target.value)}
+                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => setTagName(event.target.value)}
                                                     onClick={(event) => event.stopPropagation()}
-                                                    onKeyDown={createTag}></input>
+                                                    onKeyDown={createTag}
+
+                                                   ></input>
                                                 <TagList >
-                                                    <CelendarTag/>
+                                                    {
+                                                        tagList.map((tag)=>(
+                                                            <CelendarTag/>
+                                                        ))
+                                                    }
+                                               
                                                 </TagList>
                                             </CreateTagWrapper>
                                             
