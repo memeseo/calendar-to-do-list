@@ -122,23 +122,42 @@ export const ModalTag = styled.div<{ isTagInput: boolean}>`
 export const CreateTagWrapper = styled.div`
     z-index: 1;
     width : 100%;
-    height : 100%;
+    height : auto;
     border-radius: 5px;
     box-shadow: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px,
                 rgba(15, 15, 15, 0.1) 0px 3px 6px,
                 rgba(15, 15, 15, 0.2) 0px 9px 24px;
+    background-color: rgb(247,247,245);
+    position: relative;
+    top: auto;
     input {
         box-shadow: rgba(55, 53, 47, 0.16) 0px -1px inset;
         border : none;
         outline: none;
         width : 100%;
-        height: 100%;
+        height: 30px;
         border-radius: 5px, 0px, 5px, 0px;
         background-color: rgb(247,247,245);
         padding : 0 2%;
         &::placeholder{
             color: rgba(55, 53, 47, 0.5);
         }
+    }
+`;
+
+export const SelectedTag = styled.span<{color: string}>`
+    display: inline-block;
+    font-size: 12px;
+    line-height: 100%;
+    height: 100%;
+    background-color: ${(props)=> `rgb(${props.color})`};
+    padding : 0 2%;
+    padding-top : 1%;
+    border-radius: 3px;
+    height : 85%;
+    svg{
+        color : grey;
+        cursor: pointer;
     }
 `;
 
@@ -177,7 +196,7 @@ export const TagWrapper = styled.div<{color:string}>`
                 height: 100%;
                 background-color: ${(props)=> `rgb(${props.color})`};
                 padding : 0 2%;
-                padding-top : 1.5%;
+                padding-top : 1%;
                 border-radius: 3px;
                 height : 85%;
             }

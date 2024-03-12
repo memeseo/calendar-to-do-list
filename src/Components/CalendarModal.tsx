@@ -2,7 +2,7 @@
 import { AnimatePresence, useViewportScroll} from "framer-motion";
 import { format} from 'date-fns';
 import { useForm } from 'react-hook-form';
-import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalContents, ModalSubmit, ErrorMessage, CreateTagWrapper, TagList} from 'asset/CalendarModal';
+import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalContents, ModalSubmit, ErrorMessage, CreateTagWrapper, TagList, SelectedTag} from 'asset/CalendarModal';
 import { FaCalendarDays } from "react-icons/fa6";
 import { FaHashtag } from "react-icons/fa";
 import { CellObject } from 'model/Cell';
@@ -11,6 +11,7 @@ import { CelendarTag } from "Components/CelendarTag";
 import { Tag } from 'model/Tag';
 import { CalendarObject } from 'model/Calendar';
 import { ScheduleObject } from "model/Schedule";
+import { IoCloseSharp } from "react-icons/io5";
 
 interface Props {
     isModalOpen : boolean;
@@ -36,7 +37,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, curren
     }, []);
 
     const [schedule, setSchedule] = useState<ScheduleObject>(getScheduleObject);
-
+    const [selectedTag, setSelectedTag] =useState<Tag>();
 
     const onValid = (data:IForm) => {
         console.log('onValid ', data);
@@ -67,6 +68,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, curren
     const selectTag = (event : React.MouseEvent<HTMLDivElement>, tag:Tag) => {
         event.stopPropagation();
         schedule.selectedTag = tag;
+        setSelectedTag(schedule.selectedTag);
     }
 
     return (
@@ -112,6 +114,11 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, curren
                                     {
                                         !isTagInput ? <div className="empty-tag-wrapper" onClick={setTagInputState}>비어 있음</div> : (
                                             <CreateTagWrapper>
+                                                {
+                                                    selectedTag ?
+                                                    ( <SelectedTag color={selectedTag?.color}>{selectedTag?.name}<IoCloseSharp/></SelectedTag> ) : ''
+                                                }
+                                               
                                                 <input placeholder="태그를 선택하거나 생성해 주세요."
                                                     value={tagName}
                                                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => setTagName(event.target.value)}
