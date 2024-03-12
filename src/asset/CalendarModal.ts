@@ -156,8 +156,9 @@ export const TagList = styled.div`
     overflow-y : auto;
     background-color: white;
     padding : 0 1%;
+`;
 
-    .tagWrapper{
+export const TagWrapper = styled.div<{color:string}>`
         border-radius: 5px;
         height : 28px;
         padding : 0 2%;
@@ -165,20 +166,22 @@ export const TagList = styled.div`
         display:flex;
         align-items:center;
         &:hover {
-            background: rgba(55, 53, 47, 0.08);
+            cursor: pointer;
+            background: rgba(55, 53, 47, 0.05);
         }
         .tagName{
             span{
-                font-size: 12px;
                 display: inline-block;
+                font-size: 12px;
                 line-height: 100%;
                 height: 100%;
-                background-color: rgb(219, 237, 219);
+                background-color: ${(props)=> `rgb(${props.color})`};
                 padding : 0 2%;
-                padding-top : 2%;
-                border-radius: 5%;
+                padding-top : 1.5%;
+                border-radius: 3px;
+                height : 85%;
             }
-       
+            padding-top : 1%;
             height: 100%;
             width : 95%;
             float: left;
@@ -189,9 +192,7 @@ export const TagList = styled.div`
             font-size: 20px;
             color: rgba(55, 53, 47, 0.45);
         }
-
-    }
-`;
+`
 
 export const ModalContents = styled.div<{isError:boolean}>`
     width : 100%;

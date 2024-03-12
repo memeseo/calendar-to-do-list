@@ -1,33 +1,37 @@
 import { addDays, endOfMonth, endOfWeek, startOfMonth, startOfWeek} from 'date-fns';
-import { CalenderCell } from 'model/CalendarCell';
+import { CellObject } from 'model/Cell';
 import { CalendarCell } from 'Components/CalendarCell';
 import { CellWrapper } from 'asset/CalendarCells';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { CalendarModal } from 'Components/CalendarModal';
+import { CalendarObject } from 'model/Calendar';
 
 interface Props {
-    currentMonth : Date
+    currentCalendar : CalendarObject
 }
 
-
-export const CalendarCells = ({currentMonth} : Props) => {
-    const monthStart = startOfMonth(currentMonth),
-          monthEnd   = endOfMonth(currentMonth),
+export const CalendarCells = ({currentCalendar} : Props) => {
+    const monthStart = startOfMonth(currentCalendar.currentMonth),
+          monthEnd   = endOfMonth(currentCalendar.currentMonth),
           startDate  = startOfWeek(monthStart),
           endDate    = endOfWeek(monthEnd);
 
-    let days = [],
-        day  = startDate;
+    const getDays = useMemo(() => {
+        let days = currentCalendar.cells,
+            day  = startDate;
 
-    while(day <= endDate){
-        days.push(new CalenderCell(currentMonth, day));
-        day = addDays(day, 1);
-    }
+        while(day <= endDate){
+            days.push(new CellObject(currentCalendar.currentMonth, day));
+            day = addDays(day, 1);
+        }
+        
+        return days;
+    }, [currentCalendar.currentMonth]);
 
-    const [selectedDate, setSelectedDate] = useState<CalenderCell | null>(null);
+    const [selectedDate, setSelectedDate] = useState<CellObject>();
     const [isModalOpen, setModalOpenState] = useState(false);
 
-    const onDateClick = (day:CalenderCell) => {
+    const onDateClick = (day:CellObject) => {
         setSelectedDate(day);
         setModalOpenState(true);
     };
@@ -36,20 +40,20 @@ export const CalendarCells = ({currentMonth} : Props) => {
         setModalOpenState(false);
     }
 
-    useEffect(()=>{
-        console.log('>>> ', selectedDate)
-    }, [selectedDate]);
-
     return (
         <>
             <CellWrapper>
                 {
-                    days.map((day, index)=>(
+                    getDays.map((day, index)=>(
                         <CalendarCell day={day} index={index} onDateClick={onDateClick}/>
                     ))
                 }
             </CellWrapper>
-            <CalendarModal isModalOpen={isModalOpen} onOverlayClick={onOverlayClick} selectedDate={selectedDate}/>
+            {
+                selectedDate ? (
+                    <CalendarModal isModalOpen={isModalOpen} onOverlayClick={onOverlayClick} selectedDate={selectedDate} currentCalendar={currentCalendar}/>
+                ) : ''
+            }
         </>
 
     )

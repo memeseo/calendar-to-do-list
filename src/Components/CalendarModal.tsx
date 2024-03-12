@@ -5,15 +5,18 @@ import { useForm } from 'react-hook-form';
 import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalContents, ModalSubmit, ErrorMessage, CreateTagWrapper, TagList} from 'asset/CalendarModal';
 import { FaCalendarDays } from "react-icons/fa6";
 import { FaHashtag } from "react-icons/fa";
-import { CalenderCell } from 'model/CalendarCell';
-import { useState, useCallback, useEffect } from "react";
+import { CellObject } from 'model/Cell';
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { CelendarTag } from "Components/CelendarTag";
 import { Tag } from 'model/Tag';
+import { CalendarObject } from 'model/Calendar';
+import { ScheduleObject } from "model/Schedule";
 
 interface Props {
     isModalOpen : boolean;
     onOverlayClick(): void;
-    selectedDate : CalenderCell | null;
+    selectedDate : CellObject;
+    currentCalendar : CalendarObject;
 }
 
 interface IForm {
@@ -22,11 +25,18 @@ interface IForm {
   }
 
 
-export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Props) => {
+export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, currentCalendar} : Props) => {
     const { scrollY } = useViewportScroll();
     const { register, handleSubmit, formState: { errors }} = useForm<IForm>();
     const [isTagInput, setTagInput] = useState(false);
     const [tagName, setTagName] = useState("");
+
+    const getScheduleObject = useMemo(() => {
+        return new ScheduleObject();
+    }, []);
+
+    const [schedule, setSchedule] = useState<ScheduleObject>(getScheduleObject);
+
 
     const onValid = (data:IForm) => {
         console.log('onValid ', data);
@@ -38,13 +48,13 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
         ['empty-tag-wrapper'].includes(className) ? setTagInput(true) : setTagInput(false);
     }
 
-    const [tagList, setTagList] = useState<Tag[]>([]);
+    const [tagList, setTagList] = useState<Tag[]>(currentCalendar.tags);
     const createTag = (event: React.KeyboardEvent<HTMLInputElement>) => {
         event.stopPropagation();
 
         if(event.key === "Enter" && event.nativeEvent.isComposing === false) {
-            const tag = new Tag(tagName, getColor());
-            setTagList([...tagList, tag]);
+            currentCalendar.tags.push(new Tag(tagName, getColor()));
+            setTagList([...currentCalendar.tags]);
             setTagName('');
         } 
     }
@@ -52,6 +62,11 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
     const getColor = () => {
         const colors = ["233,233,232", "227,226,224", "236,225,219", "246,223,204", "251,236,204", "223,236,221", "214,229,238", "230,223,237", "242,25,233", "251,227,222"];
         return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    const selectTag = (event : React.MouseEvent<HTMLDivElement>, tag:Tag) => {
+        event.stopPropagation();
+        schedule.selectedTag = tag;
     }
 
     return (
@@ -65,6 +80,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                             animate={{ opacity: 1 }}/>
 
                         <CalendarModalWrapper
+                            key={format(selectedDate.startDate,'MM-dd')}
                             onClick={setTagInputState}
                             exit={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -101,18 +117,15 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                                                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => setTagName(event.target.value)}
                                                     onClick={(event) => event.stopPropagation()}
                                                     onKeyDown={createTag}
-
                                                    ></input>
-                                                <TagList >
+                                                <TagList>
                                                     {
                                                         tagList.map((tag)=>(
-                                                            <CelendarTag/>
+                                                            <CelendarTag tag={tag} selectTag={selectTag}/>
                                                         ))
                                                     }
-                                               
                                                 </TagList>
                                             </CreateTagWrapper>
-                                            
                                         )
                                     }
                                     

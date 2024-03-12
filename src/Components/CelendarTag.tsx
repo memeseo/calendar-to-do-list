@@ -1,14 +1,21 @@
 import { IoEllipsisHorizontalCircle } from "react-icons/io5";
+import { Tag } from 'model/Tag';
+import { TagWrapper } from 'asset/CalendarModal';
 
-export const CelendarTag = () => {
+interface Props {
+    tag : Tag;
+    selectTag(event:React.MouseEvent<HTMLDivElement>, tag:Tag) : void;
+}
+
+export const CelendarTag = ({ tag, selectTag } : Props) => {
    return (
         <>
-            <div className="tagWrapper">
-                <div className="tagName">
-                    <span>Tag</span>
+            <TagWrapper color={tag.color}>
+                <div className="tagName" onClick={(event) => selectTag(event, tag)}>
+                    <span>{tag.name}</span>
                 </div>
                 <IoEllipsisHorizontalCircle/>
-            </div>
+            </TagWrapper>
         </>
    ); 
 }
