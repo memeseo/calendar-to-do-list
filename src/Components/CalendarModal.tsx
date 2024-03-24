@@ -2,11 +2,11 @@
 import { AnimatePresence, useViewportScroll} from "framer-motion";
 import { format} from 'date-fns';
 import { useForm } from 'react-hook-form';
-import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalContents, ModalSubmit, ErrorMessage, CreateTagWrapper, TagList, SelectedTag} from 'asset/CalendarModal';
+import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalContents, ModalSubmit, ErrorMessage, CreateTagWrapper, TagList, SelectdTagWapper, TagNameWrapper} from 'asset/CalendarModal';
 import { FaCalendarDays } from "react-icons/fa6";
 import { FaHashtag } from "react-icons/fa";
 import { CellObject } from 'model/Cell';
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { CelendarTag } from "Components/CelendarTag";
 import { Tag } from 'model/Tag';
 import { CalendarObject } from 'model/Calendar';
@@ -37,23 +37,24 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, curren
     }, []);
 
     const [schedule, setSchedule] = useState<ScheduleObject>(getScheduleObject);
-    const [selectedTag, setSelectedTag] =useState<Tag>();
+    const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
 
     const onValid = (data:IForm) => {
         console.log('onValid ', data);
     }
 
     const setTagInputState = (event: React.MouseEvent<HTMLElement>) => {
+       
         const className = (event.target as HTMLDivElement).className;
-
-        ['empty-tag-wrapper'].includes(className) ? setTagInput(true) : setTagInput(false);
+        console.log('zzzz ', className);
+        ['show-tag-wrapper'].includes(className) ? setTagInput(true) : setTagInput(false);
     }
 
     const [tagList, setTagList] = useState<Tag[]>(currentCalendar.tags);
     const createTag = (event: React.KeyboardEvent<HTMLInputElement>) => {
         event.stopPropagation();
 
-        if(event.key === "Enter" && event.nativeEvent.isComposing === false) {
+        if(event.key === "Enter" && event.nativeEvent.isComposing === false && tagName.length > 0 && tagName.length < 30) {
             currentCalendar.tags.push(new Tag(tagName, getColor()));
             setTagList([...currentCalendar.tags]);
             setTagName('');
@@ -69,6 +70,12 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, curren
         event.stopPropagation();
         schedule.selectedTag = tag;
         setSelectedTag(schedule.selectedTag);
+    }
+
+    const deleteSelectedTag = (event : React.MouseEvent<SVGElement>) => {
+        event.stopPropagation();
+
+        setSelectedTag(null);
     }
 
     return (
@@ -110,21 +117,34 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, curren
                                 <div className="title">
                                     <FaHashtag/> 태그
                                 </div>
-                                <div className="contents tag-input">
+                                <div className="contents">
                                     {
-                                        !isTagInput ? <div className="empty-tag-wrapper" onClick={setTagInputState}>비어 있음</div> : (
+                                        !isTagInput ? <div className="show-tag-wrapper" onClick={setTagInputState}>
+                                            {
+                                                selectedTag ? <TagNameWrapper color={selectedTag?.color}>{selectedTag?.name}</TagNameWrapper> : <span>비어 있음</span>
+                                            }
+                                            </div> : (
                                             <CreateTagWrapper>
-                                                {
-                                                    selectedTag ?
-                                                    ( <SelectedTag color={selectedTag?.color}>{selectedTag?.name}<IoCloseSharp/></SelectedTag> ) : ''
-                                                }
-                                               
-                                                <input placeholder="태그를 선택하거나 생성해 주세요."
-                                                    value={tagName}
-                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => setTagName(event.target.value)}
-                                                    onClick={(event) => event.stopPropagation()}
-                                                    onKeyDown={createTag}
-                                                   ></input>
+                                                <div className="tag-input-wrapper">
+                                                    {   
+                                                        selectedTag ?
+                                                        ( 
+                                                            <SelectdTagWapper color={selectedTag?.color}>
+                                                                <div className="selected-tag" onClick={(event) => event.stopPropagation()} >{selectedTag?.name}</div> 
+
+                                                                <IoCloseSharp onClick={deleteSelectedTag}/>
+                                                            </SelectdTagWapper>
+                                                        ) : ''
+                                                    }
+                                                
+                                                    <input placeholder="태그를 선택하거나 생성해 주세요."
+                                                        value={tagName}
+                                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => setTagName(event.target.value)}
+                                                        onClick={(event) => event.stopPropagation()}
+                                                        onKeyDown={createTag}
+                                                    ></input>
+                                                </div>
+
                                                 <TagList>
                                                     {
                                                         tagList.map((tag)=>(
