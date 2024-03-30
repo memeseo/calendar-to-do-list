@@ -19,6 +19,22 @@ export class CellObject {
     set startDate(startDate:Date){
         this._startDate = startDate;
     }
+
+    get currentMonth() {
+        return this._currentMonth;
+    }
+
+    set currentMonth(currentMonth:Date){
+        this._currentMonth = currentMonth;
+    }
+
+    get scheduleList() {
+        return this._scheduleList;
+    }
+
+    set scheduleList(scheduleList: ScheduleObject[]){
+        this._scheduleList = scheduleList;
+    }
     
     isCurrentMoth(){
         return format(this._currentMonth, "M") === format(this._startDate, "M")

@@ -21,6 +21,7 @@ export const CalendarCells = ({currentCalendar} : Props) => {
             day  = startDate;
 
         while(day <= endDate){
+            // 여기서 스케줄 객체 생성
             days.push(new CellObject(currentCalendar.currentMonth, day));
             day = addDays(day, 1);
         }

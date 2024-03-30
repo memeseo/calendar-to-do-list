@@ -6,12 +6,14 @@ import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalConte
 import { FaCalendarDays } from "react-icons/fa6";
 import { FaHashtag } from "react-icons/fa";
 import { CellObject } from 'model/Cell';
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect} from "react";
 import { CelendarTag } from "Components/CelendarTag";
 import { Tag } from 'model/Tag';
 import { CalendarObject } from 'model/Calendar';
 import { ScheduleObject } from "model/Schedule";
 import { IoCloseSharp } from "react-icons/io5";
+import { collection, getDoc, getDocs ,addDoc , updateDoc ,doc , deleteDoc} from "firebase/firestore"; 
+import {db} from 'Routes/config';
 
 interface Props {
     isModalOpen : boolean;
@@ -32,31 +34,36 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, curren
     const [isTagInput, setTagInput] = useState(false);
     const [tagName, setTagName] = useState("");
 
-    const getScheduleObject = useMemo(() => {
-        return new ScheduleObject();
-    }, []);
-
-    const [schedule, setSchedule] = useState<ScheduleObject>(getScheduleObject);
+    const [schedule, setSchedule] = useState<ScheduleObject>({});
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
 
     const onValid = (data:IForm) => {
-        console.log('onValid ', data);
+        
+        schedule.title = data.title;
+        schedule.contents = data.contents;
+
+        selectedDate.scheduleList.push(schedule);
+        const test = JSON.stringify(currentCalendar);
+      
+        addDoc(collection(db,"calendar"), {test});
+
+        onOverlayClick();
     }
 
     const setTagInputState = (event: React.MouseEvent<HTMLElement>) => {
        
         const className = (event.target as HTMLDivElement).className;
-        console.log('zzzz ', className);
+  
         ['show-tag-wrapper'].includes(className) ? setTagInput(true) : setTagInput(false);
     }
 
-    const [tagList, setTagList] = useState<Tag[]>(currentCalendar.tags);
+    const [tagList, setTagList] = useState<Tag[]>([]);
     const createTag = (event: React.KeyboardEvent<HTMLInputElement>) => {
         event.stopPropagation();
 
         if(event.key === "Enter" && event.nativeEvent.isComposing === false && tagName.length > 0 && tagName.length < 30) {
-            currentCalendar.tags.push(new Tag(tagName, getColor()));
-            setTagList([...currentCalendar.tags]);
+            // db에 태그 저장하기
+            setTagList([...tagList, new Tag(tagName, getColor())]);
             setTagName('');
         } 
     }
@@ -68,8 +75,8 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, curren
 
     const selectTag = (event : React.MouseEvent<HTMLDivElement>, tag:Tag) => {
         event.stopPropagation();
-        schedule.selectedTag = tag;
-        setSelectedTag(schedule.selectedTag);
+        schedule.tag = tag;
+        setSelectedTag(schedule.tag);
     }
 
     const deleteSelectedTag = (event : React.MouseEvent<SVGElement>) => {
@@ -77,6 +84,10 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, curren
 
         setSelectedTag(null);
     }
+
+    useEffect(()=>{
+        setSchedule(new ScheduleObject(format(selectedDate.startDate, 'yyyy-MM-dd')));
+    }, [selectedDate])
 
     return (
         <>

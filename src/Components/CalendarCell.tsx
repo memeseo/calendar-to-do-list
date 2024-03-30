@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { format } from 'date-fns';
 import { motion } from "framer-motion";
 import { CellObject } from 'model/Cell';
-import { Tag } from 'model/Tag';
 
 interface Props {
     day : CellObject;
