@@ -19,7 +19,6 @@ interface Props {
     isModalOpen : boolean;
     onOverlayClick(): void;
     selectedDate : CellObject;
-    currentCalendar : CalendarObject;
 }
 
 interface IForm {
@@ -28,30 +27,28 @@ interface IForm {
   }
 
 
-export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, currentCalendar} : Props) => {
+export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Props) => {
     const { scrollY } = useViewportScroll();
     const { register, handleSubmit, formState: { errors }} = useForm<IForm>();
     const [isTagInput, setTagInput] = useState(false);
     const [tagName, setTagName] = useState("");
 
-    const [schedule, setSchedule] = useState<ScheduleObject>({});
+    const [schedule, setSchedule] = useState<ScheduleObject>(new ScheduleObject(format(selectedDate.startDate, 'yyyy-MM-dd')));
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
-
+  
     const onValid = (data:IForm) => {
         
         schedule.title = data.title;
         schedule.contents = data.contents;
 
         selectedDate.scheduleList.push(schedule);
-        const test = JSON.stringify(currentCalendar);
-      
-        addDoc(collection(db,"calendar"), {test});
+        const test = JSON.stringify(schedule);
+        addDoc(collection(db,"calendar"), {test});// 디비에 저장할 때 날짜 컬럼 따로 해서 저장해야 함 초기에 날짜로 필터링해서 받아올 예정
 
         onOverlayClick();
     }
 
     const setTagInputState = (event: React.MouseEvent<HTMLElement>) => {
-       
         const className = (event.target as HTMLDivElement).className;
   
         ['show-tag-wrapper'].includes(className) ? setTagInput(true) : setTagInput(false);
@@ -76,18 +73,15 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, curren
     const selectTag = (event : React.MouseEvent<HTMLDivElement>, tag:Tag) => {
         event.stopPropagation();
         schedule.tag = tag;
+
         setSelectedTag(schedule.tag);
     }
 
     const deleteSelectedTag = (event : React.MouseEvent<SVGElement>) => {
         event.stopPropagation();
-
+    
         setSelectedTag(null);
     }
-
-    useEffect(()=>{
-        setSchedule(new ScheduleObject(format(selectedDate.startDate, 'yyyy-MM-dd')));
-    }, [selectedDate])
 
     return (
         <>

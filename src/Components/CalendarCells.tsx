@@ -16,28 +16,29 @@ export const CalendarCells = ({currentCalendar} : Props) => {
           startDate  = startOfWeek(monthStart),
           endDate    = endOfWeek(monthEnd);
 
-    const getDays = useMemo(() => {
+    const getDays = () => {
         let days = currentCalendar.cells,
             day  = startDate;
 
         while(day <= endDate){
-            // 여기서 스케줄 객체 생성
+            // cell 객체 생성
             days.push(new CellObject(currentCalendar.currentMonth, day));
             day = addDays(day, 1);
         }
         
         return days;
-    }, [currentCalendar.currentMonth]);
+    };
 
-    const [selectedDate, setSelectedDate] = useState<CellObject>();
+    const [selectedDate, setSelectedDate] = useState<CellObject | null>(null);
     const [isModalOpen, setModalOpenState] = useState(false);
 
-    const onDateClick = (day:CellObject) => {
-        setSelectedDate(day);
+    const onDateClick = (cell:CellObject) => {
+        setSelectedDate(cell);
         setModalOpenState(true);
     };
 
     const onOverlayClick = () => {
+        setSelectedDate(null);
         setModalOpenState(false);
     }
 
@@ -45,14 +46,14 @@ export const CalendarCells = ({currentCalendar} : Props) => {
         <>
             <CellWrapper>
                 {
-                    getDays.map((day, index)=>(
+                    getDays().map((day, index)=>(
                         <CalendarCell day={day} index={index} onDateClick={onDateClick}/>
                     ))
                 }
             </CellWrapper>
             {
                 selectedDate ? (
-                    <CalendarModal isModalOpen={isModalOpen} onOverlayClick={onOverlayClick} selectedDate={selectedDate} currentCalendar={currentCalendar}/>
+                    <CalendarModal isModalOpen={isModalOpen} onOverlayClick={onOverlayClick} selectedDate={selectedDate}/>
                 ) : ''
             }
         </>
