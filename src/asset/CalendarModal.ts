@@ -82,18 +82,15 @@ export const ModalTag = styled.div<{ isTagInput: boolean}>`
     width : 100%;
     height: 6%;
 
-    div{
-        align-items: center;
-        font-size: 14px;
-        font-weight: 350;
-    }
-
     .title{
         svg{
             padding : 1px;
             margin-right : 3%;
             color : rgba(55, 53, 47, 0.45);
         }
+        align-items: center;
+        font-size: 14px;
+        font-weight: 350;
         display: inline-flex; 
         color : rgba(55, 53, 47, 0.65);
         width : 25%;
@@ -102,6 +99,9 @@ export const ModalTag = styled.div<{ isTagInput: boolean}>`
     }
 
     .contents{
+        align-items: center;
+        font-size: 14px;
+        font-weight: 350;
         display: inline-flex; 
         padding : 0 2%;
         width : 75%;
@@ -129,6 +129,13 @@ export const TagNameWrapper = styled.span<{ color: string}>`
     border-radius: 3px;
     height : 85%;
     color : black;
+`;
+
+export const TagOutline = styled.div<{isError: boolean}>`
+    border : ${(props)=> props.isError && "2px solid red"};
+    border-radius: 5px;
+    font-size: 12px;
+    margin-bottom :  ${(props)=> props.isError && "1%"};
 `;
 
 
@@ -175,7 +182,7 @@ export const SelectdTagWapper = styled.div<{color: string}>`
     border-radius: 3px;
     height : 70%;
     padding : 1% 2% 1% 2%;
-
+    width : auto;
     .selected-tag{
         width : 100%;
         font-size: 12px;
@@ -243,7 +250,7 @@ export const ModalContents = styled.div<{isError:boolean}>`
     width : 100%;
     height: 52%;
     border-top : 1px solid rgba(55, 53, 47, 0.15);
-    margin-top : 3%;
+    margin-top : 5%;
 
     textarea{
         border : ${(props)=> props.isError ? "2px solid red" : "none"};
@@ -309,9 +316,11 @@ export const Overley = styled(motion.div)`
     opacity : 0;
 `;
 
-export const ErrorMessage = styled.div`
+export const ErrorMessage = styled.div<{isTagEmptyError:boolean}>`
     color : red;
     font-size: 12px;
     font-weight: 400;
     padding : 1% 0;
+    padding-left : ${(props)=> props.isTagEmptyError && `25%`}
+    
 `;

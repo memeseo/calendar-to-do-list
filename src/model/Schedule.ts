@@ -16,20 +16,20 @@ export class ScheduleObject {
         this._contents = "";
     }
 
-    get start_date(){
+    get startDate(){
         return this._startDate;
     }
 
-    set start_date(start_date:string){
-        this._startDate = start_date;
+    set startDate(startDate:string){
+        this._startDate = startDate;
     }
 
-    get end_date(){
+    get endDate(){
         return this._endDate;
     }
 
-    set end_date(end_date:string){
-        this._endDate = end_date;
+    set endDate(endDate:string){
+        this._endDate = endDate;
     }
 
     get tag(){

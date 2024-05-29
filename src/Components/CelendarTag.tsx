@@ -14,7 +14,7 @@ export const CelendarTag = ({ tag, selectTag } : Props) => {
                 <div className="tagName" onClick={(event) => selectTag(event, tag)}>
                     <span>{tag.name}</span>
                 </div>
-                <IoEllipsisHorizontalCircle/>
+                <IoEllipsisHorizontalCircle  onClick={(event)=> {event.stopPropagation();}}/>
             </TagWrapper>
         </>
    ); 

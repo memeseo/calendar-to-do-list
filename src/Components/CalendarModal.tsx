@@ -2,7 +2,8 @@
 import { AnimatePresence, useViewportScroll} from "framer-motion";
 import { format} from 'date-fns';
 import { useForm } from 'react-hook-form';
-import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalContents, ModalSubmit, ErrorMessage, CreateTagWrapper, TagList, SelectdTagWapper, TagNameWrapper} from 'asset/CalendarModal';
+import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalContents, ModalSubmit,
+        ErrorMessage, CreateTagWrapper, TagList, SelectdTagWapper, TagNameWrapper, TagOutline} from 'asset/CalendarModal';
 import { FaCalendarDays } from "react-icons/fa6";
 import { FaHashtag } from "react-icons/fa";
 import { CellObject } from 'model/Cell';
@@ -24,6 +25,7 @@ interface Props {
 interface IForm {
     title: string;
     contents: string;
+    tag : string;
   }
 
 
@@ -35,32 +37,57 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
 
     const [schedule, setSchedule] = useState<ScheduleObject>(new ScheduleObject(format(selectedDate.startDate, 'yyyy-MM-dd')));
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
-  
+    const [emptyTagNameError, setEmptyTagNameError] = useState<boolean>(false);
+
     const onValid = (data:IForm) => {
-        
+        if(!selectedTag){
+            setEmptyTagNameError(true);
+            return;
+        }
+
+        try{
+            addDoc(collection(db, "schedule"), {
+                startDate : schedule.startDate,
+                endDate : schedule.endDate,
+                title : data.title,
+                tag : JSON.stringify(selectedTag),
+                contents : data.contents,
+            });
+
+        }catch(error){
+            alert('스케줄 등록에 실패하였습니다.');
+        }
         schedule.title = data.title;
+        schedule.tag = selectedTag;
         schedule.contents = data.contents;
-
         selectedDate.scheduleList.push(schedule);
-        const test = JSON.stringify(schedule);
-        addDoc(collection(db,"calendar"), {test});// 디비에 저장할 때 날짜 컬럼 따로 해서 저장해야 함 초기에 날짜로 필터링해서 받아올 예정
-
         onOverlayClick();
     }
 
     const setTagInputState = (event: React.MouseEvent<HTMLElement>) => {
-        const className = (event.target as HTMLDivElement).className;
-  
-        ['show-tag-wrapper'].includes(className) ? setTagInput(true) : setTagInput(false);
+        const className = (event.target as HTMLDivElement).className,
+              classes = className.split(' ');
+
+        classes.some(cls => ['show-tag-wrapper', 'show-tag'].includes(cls)) ? setTagInput(true) : setTagInput(false);
     }
 
     const [tagList, setTagList] = useState<Tag[]>([]);
     const createTag = (event: React.KeyboardEvent<HTMLInputElement>) => {
         event.stopPropagation();
 
-        if(event.key === "Enter" && event.nativeEvent.isComposing === false && tagName.length > 0 && tagName.length < 30) {
-            // db에 태그 저장하기
-            setTagList([...tagList, new Tag(tagName, getColor())]);
+        if(event.key === "Enter" && !event.nativeEvent.isComposing && tagName.length > 0 && tagName.length < 30) {
+            const newTag = new Tag(tagName, getColor());
+
+            try{
+                addDoc(collection(db,"tag"), {
+                    name : newTag.name,
+                    color : newTag.color
+                });
+
+            }catch(error){
+                alert('태그 등록에 실패하였습니다.');
+            }
+            setTagList([...tagList, newTag]);
             setTagName('');
         } 
     }
@@ -71,15 +98,15 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
     }
 
     const selectTag = (event : React.MouseEvent<HTMLDivElement>, tag:Tag) => {
-        event.stopPropagation();
+        //event.stopPropagation();
         schedule.tag = tag;
-
+        setEmptyTagNameError(false);
         setSelectedTag(schedule.tag);
     }
 
     const deleteSelectedTag = (event : React.MouseEvent<SVGElement>) => {
         event.stopPropagation();
-    
+
         setSelectedTag(null);
     }
 
@@ -106,11 +133,10 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                                 <input {...register("title", {required : "제목은 필수 입력값 입니다.", maxLength : {value : 30, message : "30자 이하로 입력해 주세요."}})} type="text" placeholder='제목을 입력해 주세요.'></input>
                             </ModalTop>
                             {
-                                errors.hasOwnProperty("title") ?
-                                    <ErrorMessage>
+                                errors.hasOwnProperty("title") &&
+                                    <ErrorMessage isTagEmptyError={false}>
                                         * {errors?.title?.message}
-                                    </ErrorMessage> 
-                                    : null
+                                    </ErrorMessage>
                             }
                             <ModalDate>
                                 <div className="title">
@@ -122,13 +148,15 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                                 <div className="title">
                                     <FaHashtag/> 태그
                                 </div>
-                                <div className="contents">
+                                <TagOutline className="contents" isError={emptyTagNameError} >
                                     {
                                         !isTagInput ? <div className="show-tag-wrapper" onClick={setTagInputState}>
                                             {
-                                                selectedTag ? <TagNameWrapper color={selectedTag?.color}>{selectedTag?.name}</TagNameWrapper> : <span>비어 있음</span>
+                                                selectedTag ? <TagNameWrapper
+                                                className="show-tag" color={selectedTag?.color}>{selectedTag?.name}</TagNameWrapper> : <span className="show-tag">비어 있음</span>
                                             }
-                                            </div> : (
+                                            </div> 
+                                             : (
                                             <CreateTagWrapper>
                                                 <div className="tag-input-wrapper">
                                                     {   
@@ -136,18 +164,17 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                                                         ( 
                                                             <SelectdTagWapper color={selectedTag?.color}>
                                                                 <div className="selected-tag" onClick={(event) => event.stopPropagation()} >{selectedTag?.name}</div> 
-
                                                                 <IoCloseSharp onClick={deleteSelectedTag}/>
                                                             </SelectdTagWapper>
-                                                        ) : ''
+                                                        ) : (
+                                                            <input placeholder="태그를 선택하거나 생성해 주세요."
+                                                                value={tagName}
+                                                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setTagName(event.target.value)}
+                                                                onClick={(event) => event.stopPropagation()}
+                                                                onKeyDown={createTag}
+                                                            ></input>
+                                                        )
                                                     }
-                                                
-                                                    <input placeholder="태그를 선택하거나 생성해 주세요."
-                                                        value={tagName}
-                                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => setTagName(event.target.value)}
-                                                        onClick={(event) => event.stopPropagation()}
-                                                        onKeyDown={createTag}
-                                                    ></input>
                                                 </div>
 
                                                 <TagList>
@@ -161,17 +188,22 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                                         )
                                     }
                                     
-                                </div>
+                                </TagOutline>
+                                {
+                                    emptyTagNameError &&
+                                        <ErrorMessage isTagEmptyError={true}>
+                                            * 태그는 필수 입력값 입니다.
+                                        </ErrorMessage> 
+                                }
                             </ModalTag>
                             <ModalContents isError={errors.hasOwnProperty("contents")}>
                                 <textarea placeholder="내용을 입력해 주세요." {...register("contents", { maxLength : {value : 300, message : "300자 이하로 입력해 주세요."} })}></textarea>
                             </ModalContents>
                             {
-                                errors.hasOwnProperty("contents") ?
-                                    <ErrorMessage>
+                                errors.hasOwnProperty("contents") &&
+                                    <ErrorMessage isTagEmptyError={false}>
                                         * {errors?.contents?.message}
                                     </ErrorMessage> 
-                                    : null
                             }
                             <ModalSubmit>
                                 <button className="submit-button">등록</button>
