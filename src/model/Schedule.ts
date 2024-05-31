@@ -8,12 +8,12 @@ export class ScheduleObject {
     _contents : string;
 
 
-    constructor(startDate:string){
+    constructor(startDate:string, tag:Tag | null, title:string, contents:string){
         this._startDate = startDate;
         this._endDate = "";
-        this._tag = null;
-        this._title = "";
-        this._contents = "";
+        this._tag = tag;
+        this._title = title;
+        this._contents = contents;
     }
 
     get startDate(){

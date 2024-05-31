@@ -35,7 +35,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
     const [isTagInput, setTagInput] = useState(false);
     const [tagName, setTagName] = useState("");
 
-    const [schedule, setSchedule] = useState<ScheduleObject>(new ScheduleObject(format(selectedDate.startDate, 'yyyy-MM-dd')));
+    const [schedule, setSchedule] = useState<ScheduleObject>(new ScheduleObject(format(selectedDate.startDate, 'yyyy-MM-dd'), null, '', ''));
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
     const [emptyTagNameError, setEmptyTagNameError] = useState<boolean>(false);
 
