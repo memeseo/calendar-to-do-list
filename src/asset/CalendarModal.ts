@@ -123,11 +123,10 @@ export const TagNameWrapper = styled.span<{ color: string}>`
     display: inline-block;
     font-size: 12px;
     line-height: 100%;
-    height: 100%;
     background-color: ${(props)=> `rgb(${props.color})`};
     padding : 1%;
     border-radius: 3px;
-    height : 85%;
+    /* height : 85%; */
     color : black;
 `;
 

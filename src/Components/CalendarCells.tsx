@@ -22,13 +22,15 @@ export const CalendarCells = ({currentCalendar} : Props) => {
           endDate    = endOfWeek(monthEnd);
 
     const getDays = async () => {
+        currentCalendar.cells = []; // 생각해보기
         let days = currentCalendar.cells,
             day  = startDate;
 
         while(day <= endDate){
             // cell 객체 생성
-            const schedules = await getSchedulesByDate(day);// cell객체에 스케줄 넣어줘야 함
-            days.push(new CellObject(currentCalendar.currentMonth, day));
+            const schedules = await getSchedulesByDate(day);
+       
+            days.push(new CellObject(currentCalendar.currentMonth, day, schedules));
             day = addDays(day, 1);
         }
       
@@ -51,18 +53,52 @@ export const CalendarCells = ({currentCalendar} : Props) => {
 
     useEffect(()=> {
         getDays().then(res => {
-            //console.log('결과 ', res)
-            //setDays(res);
+            setDays(res);
         })
-    })
+
+    }, [currentCalendar.currentMonth])
+
+    const getWeekRange = (date:Date) => {
+        const dayOfWeek = date.getDay();
+        const diffToMonday = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek; 
+        const monday = new Date(date);
+        monday.setDate(date.getDate() + diffToMonday);
+
+        return { monday };
+    };
+  
+    const getCellHeight = (date:Date) => {
+
+        const isSunDay = date.getDay();
+        let newDate = date;
+
+        if(isSunDay === 0){
+            newDate = new Date(date);
+            newDate.setDate(date.getDate() + 7);
+        }
+
+        const { monday }  = getWeekRange(newDate),
+              mondayIndex = days.findIndex(day => day._startDate.getDate() === monday.getDate()),
+              copyDays    = JSON.parse(JSON.stringify(days)),
+              week        = copyDays.splice(mondayIndex, 7);
+
+        const maxSchedules = week.reduce( (prev:CellObject, value:CellObject) => {
+            return prev._scheduleList >= value._scheduleList ? prev : value
+        });  
+
+        return maxSchedules._scheduleList.length * 50 + 80;
+    }
 
     return (
         <>
             <CellWrapper>
                 {
-                    days.map((day, index)=>(
-                        <CalendarCell day={day} index={index} onDateClick={onDateClick}/>
-                    ))
+                    days.map((day, index) => {
+                        const height = getCellHeight(day._startDate)
+                        return(
+                            <CalendarCell day={day} index={index} onDateClick={onDateClick} height={height}/>
+                        )
+                    })
                 }
             </CellWrapper>
             {
