@@ -1,10 +1,11 @@
 import { CalendarHeader } from "Components/CalendarHeader";
 import { CalendarDays } from "Components/CalendarDays";
 import { CalendarCells } from "Components/CalendarCells";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { addMonths, subMonths } from "date-fns"
 import {CalendarWrapper} from 'asset/Calendar';
 import { CalendarObject } from 'model/Calendar';
+import { getTags } from 'apis/TagApi';
 
 export const Calendar = () => {
     const [currentMonth, setCurrentMonth] = useState<Date>(new Date()),
@@ -13,7 +14,7 @@ export const Calendar = () => {
            setToday  = () => setCurrentMonth(new Date());
     
     const [currentCalendar, setCurrentCalendar] = useState(new CalendarObject(currentMonth));
-
+    getTags();
     useEffect(()=>{
         setCurrentCalendar(new CalendarObject(currentMonth));
     }, [currentMonth]);

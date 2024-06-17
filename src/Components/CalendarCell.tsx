@@ -29,7 +29,7 @@ export const CalendarCell = ({day, index, onDateClick, height} : Props) => {
                 <CellMiddle>
                 {
                     day.scheduleList.map(schedule => (
-                        <Schedule>
+                        <Schedule onClick={() => onDateClick(day)}>
                             <div>{schedule.title}</div>
                             <TagNameWrapper color={schedule.tag.color}>{schedule.tag.name}</TagNameWrapper>
                         </Schedule>

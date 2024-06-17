@@ -2,20 +2,18 @@ import { addDays, endOfMonth, endOfWeek, startOfMonth, startOfWeek} from 'date-f
 import { CellObject } from 'model/Cell';
 import { CalendarCell } from 'Components/CalendarCell';
 import { CellWrapper } from 'asset/CalendarCells';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { CalendarModal } from 'Components/CalendarModal';
 import { CalendarObject } from 'model/Calendar';
-import {db} from 'Routes/config';
-import { collection, query, where, getDocs } from "firebase/firestore";
 import { format} from 'date-fns';
 import { getSchedulesByDate } from 'apis/ScheduleApi';
-import { ScheduleObject } from 'model/Schedule';
 
 interface Props {
     currentCalendar : CalendarObject
 }
 
 export const CalendarCells = ({currentCalendar} : Props) => {
+
     const monthStart = startOfMonth(currentCalendar.currentMonth),
           monthEnd   = endOfMonth(currentCalendar.currentMonth),
           startDate  = startOfWeek(monthStart),
@@ -29,7 +27,6 @@ export const CalendarCells = ({currentCalendar} : Props) => {
         while(day <= endDate){
             // cell 객체 생성
             const schedules = await getSchedulesByDate(day);
-       
             days.push(new CellObject(currentCalendar.currentMonth, day, schedules));
             day = addDays(day, 1);
         }
@@ -78,15 +75,16 @@ export const CalendarCells = ({currentCalendar} : Props) => {
         }
 
         const { monday }  = getWeekRange(newDate),
-              mondayIndex = days.findIndex(day => day._startDate.getDate() === monday.getDate()),
+              mondayIndex = days.findIndex(day => format(day._startDate, 'MM-dd') === format(monday, 'MM-dd')),
               copyDays    = JSON.parse(JSON.stringify(days)),
               week        = copyDays.splice(mondayIndex, 7);
 
         const maxSchedules = week.reduce( (prev:CellObject, value:CellObject) => {
             return prev._scheduleList >= value._scheduleList ? prev : value
         });  
+        const maxScheduleLength = maxSchedules._scheduleList.length;
 
-        return maxSchedules._scheduleList.length * 50 + 80;
+        return maxScheduleLength * 50 + 40 + maxScheduleLength * 15;
     }
 
     return (

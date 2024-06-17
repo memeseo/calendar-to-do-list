@@ -1,14 +1,23 @@
 import {db} from 'Routes/config';
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, orderBy} from "firebase/firestore";
 import { format} from 'date-fns';
 import {instantiationBySchedules} from 'utils/ScheduleUtil';
+
+interface ISchedule {
+    startDate: string;
+    endDate: string;
+    title : string;
+    tag : string;
+    contents : string;
+  }
 
 export const getSchedulesByDate = async (date:Date) => {
 
     try{
         const q = await query(
             collection(db, "schedule"),
-            where("startDate", "==", format(date,'yyyy-MM-dd'))
+            where("startDate", "==", format(date,'yyyy-MM-dd')),
+            orderBy("startDate", "desc")
         );
         
         const querySnapshot = await getDocs(q),
@@ -21,10 +30,11 @@ export const getSchedulesByDate = async (date:Date) => {
     }
 }
 
-export const setSchedules = () => {
+export const setSchedules = (schedule:ISchedule) => {
+    try{
+        addDoc(collection(db, "schedule"), schedule);
 
-}
-
-export const setTags = () => {
-
+    }catch(error){
+        alert('스케줄 등록에 실패하였습니다.');
+    }
 }

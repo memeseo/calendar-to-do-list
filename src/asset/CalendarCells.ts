@@ -8,11 +8,14 @@ export const CellWrapper = styled.div`
 `;
 export const CellTop = styled.div`
     width : 100%;
-    min-height: 30px;
+    height : 40px;
+
 `;
 
 export const CellMiddle = styled.div`
     width : 100%;
+   
+  
 `;
 
 export const AddSchedule = styled.div<{ isHover: boolean}>`

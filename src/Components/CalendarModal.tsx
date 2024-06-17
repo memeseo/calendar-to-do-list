@@ -10,11 +10,11 @@ import { CellObject } from 'model/Cell';
 import { useState, useMemo, useEffect} from "react";
 import { CelendarTag } from "Components/CelendarTag";
 import { Tag } from 'model/Tag';
-import { CalendarObject } from 'model/Calendar';
 import { ScheduleObject } from "model/Schedule";
 import { IoCloseSharp } from "react-icons/io5";
-import { collection, getDoc, getDocs ,addDoc , updateDoc ,doc , deleteDoc} from "firebase/firestore"; 
-import {db} from 'Routes/config';
+import { setSchedules } from 'apis/ScheduleApi';
+import { setTags } from 'apis/TagApi';
+import { useSelector } from 'react-redux';
 
 interface Props {
     isModalOpen : boolean;
@@ -45,18 +45,14 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
             return;
         }
 
-        try{
-            addDoc(collection(db, "schedule"), {
+        setSchedules({
                 startDate : schedule.startDate,
                 endDate : schedule.endDate,
                 title : data.title,
                 tag : JSON.stringify(selectedTag),
                 contents : data.contents,
-            });
+        });
 
-        }catch(error){
-            alert('스케줄 등록에 실패하였습니다.');
-        }
         schedule.title = data.title;
         schedule.tag = selectedTag;
         schedule.contents = data.contents;
@@ -70,7 +66,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
 
         classes.some(cls => ['show-tag-wrapper', 'show-tag'].includes(cls)) ? setTagInput(true) : setTagInput(false);
     }
-
+    //const tags = useSelector(state => state.tag.payload)
     const [tagList, setTagList] = useState<Tag[]>([]);
     const createTag = (event: React.KeyboardEvent<HTMLInputElement>) => {
         event.stopPropagation();
@@ -78,15 +74,10 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
         if(event.key === "Enter" && !event.nativeEvent.isComposing && tagName.length > 0 && tagName.length < 30) {
             const newTag = new Tag(tagName, getColor());
 
-            try{
-                addDoc(collection(db,"tag"), {
-                    name : newTag.name,
-                    color : newTag.color
-                });
-
-            }catch(error){
-                alert('태그 등록에 실패하였습니다.');
-            }
+            setTags({
+                _name : newTag.name,
+                _color : newTag.color
+            });
             setTagList([...tagList, newTag]);
             setTagName('');
         } 
