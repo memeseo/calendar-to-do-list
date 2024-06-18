@@ -7,7 +7,7 @@ import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalConte
 import { FaCalendarDays } from "react-icons/fa6";
 import { FaHashtag } from "react-icons/fa";
 import { CellObject } from 'model/Cell';
-import { useState, useMemo, useEffect} from "react";
+import { useState } from "react";
 import { CelendarTag } from "Components/CelendarTag";
 import { Tag } from 'model/Tag';
 import { ScheduleObject } from "model/Schedule";
@@ -15,6 +15,8 @@ import { IoCloseSharp } from "react-icons/io5";
 import { setSchedules } from 'apis/ScheduleApi';
 import { setTags } from 'apis/TagApi';
 import { useSelector } from 'react-redux';
+import store, { RootState } from 'reducer/index';
+import { addToTags } from 'reducer/tag';
 
 interface Props {
     isModalOpen : boolean;
@@ -66,19 +68,22 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
 
         classes.some(cls => ['show-tag-wrapper', 'show-tag'].includes(cls)) ? setTagInput(true) : setTagInput(false);
     }
-    //const tags = useSelector(state => state.tag.payload)
-    const [tagList, setTagList] = useState<Tag[]>([]);
+
+    const tags = useSelector((state:RootState) => state?.tag.tags);
+
     const createTag = (event: React.KeyboardEvent<HTMLInputElement>) => {
         event.stopPropagation();
+        const isDuplicate = tags.some(tag => tag.name?.trim() === tagName?.trim());
 
-        if(event.key === "Enter" && !event.nativeEvent.isComposing && tagName.length > 0 && tagName.length < 30) {
+        if(event.key === "Enter" && !event.nativeEvent.isComposing && tagName.length > 0 && tagName.length < 30 && !isDuplicate) {
             const newTag = new Tag(tagName, getColor());
 
             setTags({
                 _name : newTag.name,
                 _color : newTag.color
             });
-            setTagList([...tagList, newTag]);
+
+            store.dispatch(addToTags([...tags, newTag]));
             setTagName('');
         } 
     }
@@ -120,7 +125,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                             onSubmit={handleSubmit(onValid)}
                             onKeyPress={(e:React.KeyboardEvent<HTMLElement>) => { e.key === 'Enter' && e.preventDefault(); }}
                         >
-                            <ModalTop isError={errors.hasOwnProperty("title")}>
+                            <ModalTop $isError={errors.hasOwnProperty("title")}>
                                 <input {...register("title", {required : "제목은 필수 입력값 입니다.", maxLength : {value : 30, message : "30자 이하로 입력해 주세요."}})} type="text" placeholder='제목을 입력해 주세요.'></input>
                             </ModalTop>
                             {
@@ -135,11 +140,11 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                                 </div>
                                 <div className="contents">{selectedDate ? format(selectedDate.startDate, 'yyyy M월 d일') : null}</div>
                             </ModalDate>
-                            <ModalTag isTagInput={isTagInput}>
+                            <ModalTag $isTagInput={isTagInput}>
                                 <div className="title">
                                     <FaHashtag/> 태그
                                 </div>
-                                <TagOutline className="contents" isError={emptyTagNameError} >
+                                <TagOutline className="contents" $isError={emptyTagNameError} >
                                     {
                                         !isTagInput ? <div className="show-tag-wrapper" onClick={setTagInputState}>
                                             {
@@ -170,8 +175,8 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
 
                                                 <TagList>
                                                     {
-                                                        tagList.map((tag)=>(
-                                                            <CelendarTag tag={tag} selectTag={selectTag}/>
+                                                        tags.map((tag)=>(
+                                                            <CelendarTag key={tag.name} tag={tag} selectTag={selectTag}/>
                                                         ))
                                                     }
                                                 </TagList>
@@ -187,7 +192,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                                         </ErrorMessage> 
                                 }
                             </ModalTag>
-                            <ModalContents isError={errors.hasOwnProperty("contents")}>
+                            <ModalContents $isError={errors.hasOwnProperty("contents")}>
                                 <textarea placeholder="내용을 입력해 주세요." {...register("contents", { maxLength : {value : 300, message : "300자 이하로 입력해 주세요."} })}></textarea>
                             </ModalContents>
                             {

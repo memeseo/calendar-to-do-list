@@ -1,24 +1,31 @@
 import { Tag } from 'model/Tag';
+import { createSlice } from '@reduxjs/toolkit';
 
 
-const GET_TAGS:string = 'GET_TAGS'; // slice로 변경하기
-
-interface ITest {
-    type: string,
-    payload:Tag[]
+interface TagState {
+    tags: Tag[];
 }
+const initialState: TagState = {
+    tags: []
+};
+const tag = createSlice({
+    name: "tag",
+    initialState,
+    reducers: {
+        fetchTags: (state, action) => {
+            state.tags = action.payload;
+        },
+        removeTag: (state, action) => {
+            state.tags = action.payload;
+        },
+        addToTags: (state, action) => {
+            state.tags = action.payload;
+        }
+    },
+})
 
-export const fetchTags = (tags:Tag[]) => {
-    return { type: GET_TAGS, payload : tags}
-}
+export const { fetchTags, removeTag, addToTags } = tag.actions;
 
-const initTag:Tag[] = [];
+export default tag.reducer;
 
-function tag(state:Tag[] = initTag, action:ITest){
-    switch(action.type){
-        case GET_TAGS : return {...state, tags : action.payload};
-        default : return state;
-    }
-}
 
-export default tag;

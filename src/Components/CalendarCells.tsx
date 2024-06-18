@@ -94,7 +94,7 @@ export const CalendarCells = ({currentCalendar} : Props) => {
                     days.map((day, index) => {
                         const height = getCellHeight(day._startDate)
                         return(
-                            <CalendarCell day={day} index={index} onDateClick={onDateClick} height={height}/>
+                            <CalendarCell key={index} day={day} index={index} onDateClick={onDateClick} height={height}/>
                         )
                     })
                 }

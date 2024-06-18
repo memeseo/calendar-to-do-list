@@ -18,8 +18,8 @@ export const CellMiddle = styled.div`
   
 `;
 
-export const AddSchedule = styled.div<{ isHover: boolean}>`
-    display : ${(props)=> props.isHover ? 'block' : 'none' };
+export const AddSchedule = styled.div<{ $isHover: boolean}>`
+    display : ${(props)=> props.$isHover ? 'block' : 'none' };
     width : 50%;
     float: left;
     padding : 2%;
@@ -40,7 +40,7 @@ export const AddSchedule = styled.div<{ isHover: boolean}>`
     }
 `;
 
-export const Cell = styled.div<{cellbg:boolean, height:number}>`
+export const Cell = styled.div<{$cellbg:boolean, height:number}>`
     width: calc(14% - 1px);
     flex: 1 0 auto;
     min-height : 140px;
@@ -52,17 +52,17 @@ export const Cell = styled.div<{cellbg:boolean, height:number}>`
     box-sizing: border-box;
     border: 1px solid rgb(233, 233, 231);
     padding : 0.3%;
-    background-color: ${(props) => props.cellbg ? 'white' : 'rgb(251, 251, 250)'};
+    background-color: ${(props) => props.$cellbg ? 'white' : 'rgb(251, 251, 250)'};
 `;
 
-export const Day = styled.div<{cellColor:boolean}>`
+export const Day = styled.div<{$cellColor:boolean}>`
     width : 50%;
     float: right;
     padding : 3%;
     text-align: right;
     font-weight: 350;
     font-size: 14px;
-    color : ${(props) => props.cellColor ? 'rgb(55,53,48)' : 'rgba(55, 53, 47, 0.5);'};
+    color : ${(props) => props.$cellColor ? 'rgb(55,53,48)' : 'rgba(55, 53, 47, 0.5);'};
 `;
 
 export const Schedule = styled.div`

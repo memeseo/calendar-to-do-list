@@ -17,14 +17,14 @@ export const CalendarModalWrapper = styled(motion.form)`
     padding : 5%;
 `;
 
-export const ModalTop = styled.div<{ isError: boolean}>`
+export const ModalTop = styled.div<{ $isError: boolean}>`
     width : 100%;
     height: 13%;
 
     input{
         width : 100%;
         height : 100%;
-        border : ${(props)=> props.isError ? "2px solid red" : "none"};
+        border : ${(props)=> props.$isError ? "2px solid red" : "none"};
         border-radius: 5px;
         max-width: 100%;
         white-space: pre-wrap;
@@ -78,7 +78,7 @@ export const ModalDate = styled.div`
     }
 `;
 
-export const ModalTag = styled.div<{ isTagInput: boolean}>`
+export const ModalTag = styled.div<{ $isTagInput: boolean}>`
     width : 100%;
     height: 6%;
 
@@ -107,13 +107,13 @@ export const ModalTag = styled.div<{ isTagInput: boolean}>`
         width : 75%;
         height: 100%;
         float: right;
-        cursor: ${(props)=> props.isTagInput ? 'auto' : 'pointer'};
+        cursor: ${(props)=> props.$isTagInput ? 'auto' : 'pointer'};
         .show-tag-wrapper{
             width : 100%;
             color : rgb(155,154,151);
         }
         &:hover{
-            background-color: ${(props)=> props.isTagInput ? 'none' : 'rgb(55, 53, 47, 0.08)'};
+            background-color: ${(props)=> props.$isTagInput ? 'none' : 'rgb(55, 53, 47, 0.08)'};
             border-radius: 5px;
         }
     }
@@ -130,11 +130,11 @@ export const TagNameWrapper = styled.span<{ color: string}>`
     color : black;
 `;
 
-export const TagOutline = styled.div<{isError: boolean}>`
-    border : ${(props)=> props.isError && "2px solid red"};
+export const TagOutline = styled.div<{$isError: boolean}>`
+    border : ${(props)=> props.$isError && "2px solid red"};
     border-radius: 5px;
     font-size: 12px;
-    margin-bottom :  ${(props)=> props.isError && "1%"};
+    margin-bottom :  ${(props)=> props.$isError && "1%"};
 `;
 
 
@@ -245,14 +245,14 @@ export const TagWrapper = styled.div<{color:string}>`
         }
 `
 
-export const ModalContents = styled.div<{isError:boolean}>`
+export const ModalContents = styled.div<{$isError:boolean}>`
     width : 100%;
     height: 52%;
     border-top : 1px solid rgba(55, 53, 47, 0.15);
     margin-top : 5%;
 
     textarea{
-        border : ${(props)=> props.isError ? "2px solid red" : "none"};
+        border : ${(props)=> props.$isError ? "2px solid red" : "none"};
         border-radius: 5px;
         width : 100%;
         height : 100%;

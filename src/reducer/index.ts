@@ -1,6 +1,18 @@
-import { combineReducers } from 'redux';
 import tag from 'reducer/tag';
+import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
 
-const rootReducer = combineReducers({ tag })
-
-export default rootReducer;
+export default configureStore({
+    reducer : {
+        tag: tag
+    },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+          serializableCheck: false,
+    }),
+})
+export const reducers = combineReducers({
+    tag: tag
+  })
+  
+  export type RootState = ReturnType<typeof reducers>
