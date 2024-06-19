@@ -1,7 +1,8 @@
 import {db} from 'Routes/config';
-import { collection, query, where, getDocs, addDoc, orderBy, updateDoc, doc} from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, orderBy, updateDoc, doc, deleteDoc} from "firebase/firestore";
 import { format} from 'date-fns';
 import {instantiationBySchedules} from 'utils/ScheduleUtil';
+import { ScheduleObject } from 'model/Schedule';
 
 interface ISchedule {
     startDate: string;
@@ -54,5 +55,17 @@ export const setSchedule = async (schedule:ISchedule) => {
         });
     }catch(error){
         alert('스케줄 수정에 실패하였습니다.');
+    }
+}
+
+export const deleteScheduleByid = async (schedule:ScheduleObject) => {
+    try{
+        const q        = query(collection(db, 'schedule'), where('id', "==", schedule.id)),
+        querySnapshot  = await getDocs(q),
+        deletePromises = querySnapshot.docs.map(docSnapshot => deleteDoc(doc(db, 'schedule', docSnapshot.id)));
+    
+        await deletePromises;
+    }catch(error){
+        alert('스케줄을 삭제하는데 실패하였습니다.');
     }
 }

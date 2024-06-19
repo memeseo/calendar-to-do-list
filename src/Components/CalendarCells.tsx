@@ -39,8 +39,8 @@ export const CalendarCells = ({currentCalendar} : Props) => {
     const [selectedSchedule, setSelectedSchedule] = useState<ScheduleObject | null>(null);
     const [isModalOpen, setModalOpenState] = useState(false);
 
-    const onScheduleClick = (schedule:ScheduleObject) => {
-       
+    const onScheduleClick = (schedule:ScheduleObject, cell:CellObject) => {
+        setSelectedDate(cell);
         setSelectedSchedule(schedule);
         setModalOpenState(true);
     }

@@ -319,11 +319,11 @@ export const Overley = styled(motion.div)`
     opacity : 0;
 `;
 
-export const ErrorMessage = styled.div<{isTagEmptyError:boolean}>`
+export const ErrorMessage = styled.div<{$isTagEmptyError:boolean}>`
     color : red;
     font-size: 12px;
     font-weight: 400;
     padding : 1% 0;
-    padding-left : ${(props)=> props.isTagEmptyError && `25%`}
+    padding-left : ${(props)=> props.$isTagEmptyError && `25%`}
     
 `;

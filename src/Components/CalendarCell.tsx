@@ -10,8 +10,8 @@ import { ScheduleObject } from 'model/Schedule';
 interface Props {
     day : CellObject;
     index : number;
-    onDateClick(day: CellObject): void
-    onScheduleClick(schedule: ScheduleObject): void,
+    onDateClick(date: CellObject): void
+    onScheduleClick(schedule: ScheduleObject, date:CellObject): void,
     height : number
 }
 
@@ -30,7 +30,7 @@ export const CalendarCell = ({day, index, onDateClick, height, onScheduleClick} 
                 <CellMiddle>
                 {
                     day.scheduleList.map((schedule, sindex) => ( // 여기서 스케줄을 보내야 함
-                        <Schedule onClick={() => onScheduleClick(schedule)} key={sindex}>
+                        <Schedule onClick={() => onScheduleClick(schedule, day)} key={sindex}>
                             <div>{schedule.title}</div>
                             <TagNameWrapper color={schedule.tag.color}>{schedule.tag.name}</TagNameWrapper>
                         </Schedule>

@@ -12,7 +12,7 @@ import { CelendarTag } from "Components/CelendarTag";
 import { Tag } from 'model/Tag';
 import { ScheduleObject } from "model/Schedule";
 import { IoCloseSharp } from "react-icons/io5";
-import { addSchedule, setSchedule } from 'apis/ScheduleApi';
+import { addSchedule, setSchedule, deleteScheduleByid } from 'apis/ScheduleApi';
 import { addTag } from 'apis/TagApi';
 import { useSelector } from 'react-redux';
 import store, { RootState } from 'reducer/index';
@@ -35,8 +35,8 @@ interface IForm {
 
 export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, selectedSchedule} : Props) => {
 
-    const isCell     = !!selectedDate,
-          schedule   = isCell ? new ScheduleObject(format(selectedDate.startDate, 'yyyy-MM-dd'), null, '', '', '') : selectedSchedule,
+    const isSchedule = !!selectedSchedule,
+          schedule   = selectedDate && !isSchedule ? new ScheduleObject(format(selectedDate.startDate, 'yyyy-MM-dd'), null, '', '', '') : selectedSchedule,
           tags       = useSelector((state:RootState) => state?.tag.tags),
           currentTag = tags.find(tag => tag?.name === schedule?.tag?.name);
 
@@ -66,17 +66,19 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
             contents : data.contents,
         }
 
-        isCell ? addSchedule(scheduleObject) : setSchedule(scheduleObject);
+        isSchedule ? setSchedule(scheduleObject) : addSchedule(scheduleObject);
 
         schedule.title = data.title;
         schedule.tag = selectedTag;
         schedule.contents = data.contents;
-
-        isCell && selectedDate.scheduleList.push(schedule);
+        
+        (selectedDate && !isSchedule) && selectedDate.scheduleList.push(schedule);
         onOverlayClick();
     }
 
     const setTagInputState = (event: React.MouseEvent<HTMLElement>) => {
+        if(event.target instanceof SVGElement) { setTagInput(false); return; }
+      
         const className = (event.target as HTMLDivElement).className,
               classes = className.split(' ');
 
@@ -120,6 +122,14 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
         setSelectedTag(null);
     }
 
+    const deleteSchedule = () => {
+        if(!isSchedule || !selectedDate) return;
+
+        schedule && deleteScheduleByid(schedule);
+        selectedDate.scheduleList = selectedDate?.scheduleList.filter(schedule => schedule.id !== selectedSchedule.id);
+        onOverlayClick();
+    }
+
     return (
         <>
             <AnimatePresence>
@@ -140,8 +150,8 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
                             onKeyPress={(e:React.KeyboardEvent<HTMLElement>) => { e.key === 'Enter' && e.preventDefault(); }}
                         >
                             {
-                                !isCell &&
-                                <div className="schedule_delete__Button">
+                                isSchedule &&
+                                <div className="schedule_delete__Button"  onClick={deleteSchedule}>
                                     <IoTrashOutline/>
                                 </div>
                             }
@@ -151,7 +161,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
                             </ModalTop>
                             {
                                 errors.hasOwnProperty("title") &&
-                                    <ErrorMessage isTagEmptyError={false}>
+                                    <ErrorMessage $isTagEmptyError={false}>
                                         * {errors?.title?.message}
                                     </ErrorMessage>
                             }
@@ -208,7 +218,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
                                 </TagOutline>
                                 {
                                     emptyTagNameError &&
-                                        <ErrorMessage isTagEmptyError={true}>
+                                        <ErrorMessage $isTagEmptyError={true}>
                                             * 태그는 필수 입력값 입니다.
                                         </ErrorMessage> 
                                 }
@@ -218,12 +228,12 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
                             </ModalContents>
                             {
                                 errors.hasOwnProperty("contents") &&
-                                    <ErrorMessage isTagEmptyError={false}>
+                                    <ErrorMessage $isTagEmptyError={false}>
                                         * {errors?.contents?.message}
                                     </ErrorMessage> 
                             }
                             <ModalSubmit>
-                                <button className="submit-button">{isCell ? '등록' : '수정'}</button>
+                                <button className="submit-button">{isSchedule ? '수정' : '등록'}</button>
                                 <button className="cancel-button" onClick={onOverlayClick}>취소</button>
                             </ModalSubmit>
                         </CalendarModalWrapper>
