@@ -4,14 +4,16 @@ export class ScheduleObject {
     _startDate : string;
     _endDate : string;
     _tag : Tag | null;
+    _id: string;
     _title : string;
     _contents : string;
 
 
-    constructor(startDate:string, tag:Tag | null, title:string, contents:string){
+    constructor(startDate:string, tag:Tag | null, id:string, title:string, contents:string){
         this._startDate = startDate;
         this._endDate = "";
         this._tag = tag;
+        this._id = id;
         this._title = title;
         this._contents = contents;
     }
@@ -34,6 +36,13 @@ export class ScheduleObject {
 
     get tag(){
         return this._tag as Tag;
+    }
+
+    set id(id:string){
+        this._id = id;
+    }
+    get id(){
+        return this._id;
     }
 
     set tag(tag:Tag){

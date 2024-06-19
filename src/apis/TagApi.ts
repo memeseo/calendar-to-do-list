@@ -9,7 +9,7 @@ interface ITag {
     _name : string,
     _color : string
 }
-export const setTags = (tag:ITag) => {
+export const addTag = (tag:ITag) => {
     try{
         addDoc(collection(db,"tag"), tag);
 

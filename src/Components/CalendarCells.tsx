@@ -1,5 +1,6 @@
 import { addDays, endOfMonth, endOfWeek, startOfMonth, startOfWeek} from 'date-fns';
 import { CellObject } from 'model/Cell';
+import { ScheduleObject } from 'model/Schedule';
 import { CalendarCell } from 'Components/CalendarCell';
 import { CellWrapper } from 'asset/CalendarCells';
 import { useEffect, useState } from 'react';
@@ -35,15 +36,25 @@ export const CalendarCells = ({currentCalendar} : Props) => {
     };
 
     const [selectedDate, setSelectedDate] = useState<CellObject | null>(null);
+    const [selectedSchedule, setSelectedSchedule] = useState<ScheduleObject | null>(null);
     const [isModalOpen, setModalOpenState] = useState(false);
 
+    const onScheduleClick = (schedule:ScheduleObject) => {
+       
+        setSelectedSchedule(schedule);
+        setModalOpenState(true);
+    }
+
     const onDateClick = (cell:CellObject) => {
+      
         setSelectedDate(cell);
+        setSelectedSchedule(null);
         setModalOpenState(true);
     };
 
     const onOverlayClick = () => {
         setSelectedDate(null);
+        setSelectedSchedule(null);
         setModalOpenState(false);
     }
     const [days, setDays] = useState<CellObject[]>([]);
@@ -94,15 +105,15 @@ export const CalendarCells = ({currentCalendar} : Props) => {
                     days.map((day, index) => {
                         const height = getCellHeight(day._startDate)
                         return(
-                            <CalendarCell key={index} day={day} index={index} onDateClick={onDateClick} height={height}/>
+                            <CalendarCell key={index} day={day} index={index} onDateClick={onDateClick} onScheduleClick={onScheduleClick} height={height}/>
                         )
                     })
                 }
             </CellWrapper>
             {
-                selectedDate ? (
-                    <CalendarModal isModalOpen={isModalOpen} onOverlayClick={onOverlayClick} selectedDate={selectedDate}/>
-                ) : ''
+                isModalOpen && (
+                    <CalendarModal isModalOpen={isModalOpen} onOverlayClick={onOverlayClick} selectedDate={selectedDate} selectedSchedule={selectedSchedule}/>
+                )
             }
         </>
 

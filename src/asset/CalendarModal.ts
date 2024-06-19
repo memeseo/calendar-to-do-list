@@ -15,6 +15,10 @@ export const CalendarModalWrapper = styled(motion.form)`
                 rgba(15, 15, 15, 0.03) 0px 3px 6px,
                 rgba(15, 15, 15, 0.06) 0px 9px 24px;
     padding : 5%;
+    .schedule_delete__Button{
+        text-align: right;
+        color: rgba(55, 53, 47, 0.45);
+    }
 `;
 
 export const ModalTop = styled.div<{ $isError: boolean}>`

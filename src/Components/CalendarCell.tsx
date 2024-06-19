@@ -5,15 +5,17 @@ import { format } from 'date-fns';
 import { motion } from "framer-motion";
 import { CellObject } from 'model/Cell';
 import {TagNameWrapper} from 'asset/CalendarModal';
+import { ScheduleObject } from 'model/Schedule';
 
 interface Props {
     day : CellObject;
     index : number;
     onDateClick(day: CellObject): void
+    onScheduleClick(schedule: ScheduleObject): void,
     height : number
 }
 
-export const CalendarCell = ({day, index, onDateClick, height} : Props) => {
+export const CalendarCell = ({day, index, onDateClick, height, onScheduleClick} : Props) => {
     const [isHover, setHover] = useState<boolean>(false);
   
     return (
@@ -27,8 +29,8 @@ export const CalendarCell = ({day, index, onDateClick, height} : Props) => {
                 </CellTop>
                 <CellMiddle>
                 {
-                    day.scheduleList.map((schedule, sindex) => (
-                        <Schedule onClick={() => onDateClick(day)} key={sindex}>
+                    day.scheduleList.map((schedule, sindex) => ( // 여기서 스케줄을 보내야 함
+                        <Schedule onClick={() => onScheduleClick(schedule)} key={sindex}>
                             <div>{schedule.title}</div>
                             <TagNameWrapper color={schedule.tag.color}>{schedule.tag.name}</TagNameWrapper>
                         </Schedule>

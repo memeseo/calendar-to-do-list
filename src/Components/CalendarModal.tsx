@@ -12,16 +12,18 @@ import { CelendarTag } from "Components/CelendarTag";
 import { Tag } from 'model/Tag';
 import { ScheduleObject } from "model/Schedule";
 import { IoCloseSharp } from "react-icons/io5";
-import { setSchedules } from 'apis/ScheduleApi';
-import { setTags } from 'apis/TagApi';
+import { addSchedule, setSchedule } from 'apis/ScheduleApi';
+import { addTag } from 'apis/TagApi';
 import { useSelector } from 'react-redux';
 import store, { RootState } from 'reducer/index';
 import { addToTags } from 'reducer/tag';
+import { IoTrashOutline } from "react-icons/io5";
 
 interface Props {
     isModalOpen : boolean;
     onOverlayClick(): void;
-    selectedDate : CellObject;
+    selectedDate : CellObject | null;
+    selectedSchedule : ScheduleObject | null;
 }
 
 interface IForm {
@@ -31,34 +33,46 @@ interface IForm {
   }
 
 
-export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Props) => {
+export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, selectedSchedule} : Props) => {
+
+    const isCell     = !!selectedDate,
+          schedule   = isCell ? new ScheduleObject(format(selectedDate.startDate, 'yyyy-MM-dd'), null, '', '', '') : selectedSchedule,
+          tags       = useSelector((state:RootState) => state?.tag.tags),
+          currentTag = tags.find(tag => tag?.name === schedule?.tag?.name);
+
     const { scrollY } = useViewportScroll();
     const { register, handleSubmit, formState: { errors }} = useForm<IForm>();
     const [isTagInput, setTagInput] = useState(false);
     const [tagName, setTagName] = useState("");
-
-    const [schedule, setSchedule] = useState<ScheduleObject>(new ScheduleObject(format(selectedDate.startDate, 'yyyy-MM-dd'), null, '', ''));
-    const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
+    const [selectedTag, setSelectedTag] = useState<Tag | null>(currentTag ? currentTag : null);
     const [emptyTagNameError, setEmptyTagNameError] = useState<boolean>(false);
 
     const onValid = (data:IForm) => {
+        if(!schedule){
+            return;
+        }
+
         if(!selectedTag){
             setEmptyTagNameError(true);
             return;
         }
 
-        setSchedules({
-                startDate : schedule.startDate,
-                endDate : schedule.endDate,
-                title : data.title,
-                tag : JSON.stringify(selectedTag),
-                contents : data.contents,
-        });
+        const scheduleObject = {
+            startDate : schedule.startDate,
+            endDate : schedule.endDate,
+            title : data.title,
+            id: schedule.id,
+            tag : JSON.stringify(selectedTag),
+            contents : data.contents,
+        }
+
+        isCell ? addSchedule(scheduleObject) : setSchedule(scheduleObject);
 
         schedule.title = data.title;
         schedule.tag = selectedTag;
         schedule.contents = data.contents;
-        selectedDate.scheduleList.push(schedule);
+
+        isCell && selectedDate.scheduleList.push(schedule);
         onOverlayClick();
     }
 
@@ -69,8 +83,6 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
         classes.some(cls => ['show-tag-wrapper', 'show-tag'].includes(cls)) ? setTagInput(true) : setTagInput(false);
     }
 
-    const tags = useSelector((state:RootState) => state?.tag.tags);
-
     const createTag = (event: React.KeyboardEvent<HTMLInputElement>) => {
         event.stopPropagation();
         const isDuplicate = tags.some(tag => tag.name?.trim() === tagName?.trim());
@@ -78,7 +90,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
         if(event.key === "Enter" && !event.nativeEvent.isComposing && tagName.length > 0 && tagName.length < 30 && !isDuplicate) {
             const newTag = new Tag(tagName, getColor());
 
-            setTags({
+            addTag({
                 _name : newTag.name,
                 _color : newTag.color
             });
@@ -94,7 +106,9 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
     }
 
     const selectTag = (event : React.MouseEvent<HTMLDivElement>, tag:Tag) => {
-        //event.stopPropagation();
+        event.stopPropagation();
+        if(!schedule) return;
+
         schedule.tag = tag;
         setEmptyTagNameError(false);
         setSelectedTag(schedule.tag);
@@ -117,7 +131,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                             animate={{ opacity: 1 }}/>
 
                         <CalendarModalWrapper
-                            key={format(selectedDate.startDate,'MM-dd')}
+                            key={selectedDate && format(selectedDate.startDate,'MM-dd')}
                             onClick={setTagInputState}
                             exit={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -125,8 +139,15 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                             onSubmit={handleSubmit(onValid)}
                             onKeyPress={(e:React.KeyboardEvent<HTMLElement>) => { e.key === 'Enter' && e.preventDefault(); }}
                         >
+                            {
+                                !isCell &&
+                                <div className="schedule_delete__Button">
+                                    <IoTrashOutline/>
+                                </div>
+                            }
+
                             <ModalTop $isError={errors.hasOwnProperty("title")}>
-                                <input {...register("title", {required : "제목은 필수 입력값 입니다.", maxLength : {value : 30, message : "30자 이하로 입력해 주세요."}})} type="text" placeholder='제목을 입력해 주세요.'></input>
+                                <input {...register("title", {required : "제목은 필수 입력값 입니다.", maxLength : {value : 30, message : "30자 이하로 입력해 주세요."}})} type="text" placeholder='제목을 입력해 주세요.' defaultValue={schedule ? schedule.title : undefined}></input>
                             </ModalTop>
                             {
                                 errors.hasOwnProperty("title") &&
@@ -138,7 +159,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                                 <div className="title">
                                     <FaCalendarDays/> 달력
                                 </div>
-                                <div className="contents">{selectedDate ? format(selectedDate.startDate, 'yyyy M월 d일') : null}</div>
+                                <div className="contents">{schedule ? format(schedule.startDate, 'yyyy M월 d일') : null}</div>
                             </ModalDate>
                             <ModalTag $isTagInput={isTagInput}>
                                 <div className="title">
@@ -193,7 +214,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                                 }
                             </ModalTag>
                             <ModalContents $isError={errors.hasOwnProperty("contents")}>
-                                <textarea placeholder="내용을 입력해 주세요." {...register("contents", { maxLength : {value : 300, message : "300자 이하로 입력해 주세요."} })}></textarea>
+                                <textarea placeholder="내용을 입력해 주세요." defaultValue={schedule ? schedule.contents : undefined} {...register("contents", { maxLength : {value : 300, message : "300자 이하로 입력해 주세요."} })}></textarea>
                             </ModalContents>
                             {
                                 errors.hasOwnProperty("contents") &&
@@ -202,7 +223,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate} : Prop
                                     </ErrorMessage> 
                             }
                             <ModalSubmit>
-                                <button className="submit-button">등록</button>
+                                <button className="submit-button">{isCell ? '등록' : '수정'}</button>
                                 <button className="cancel-button" onClick={onOverlayClick}>취소</button>
                             </ModalSubmit>
                         </CalendarModalWrapper>

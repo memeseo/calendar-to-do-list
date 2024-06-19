@@ -1,14 +1,15 @@
 import {db} from 'Routes/config';
-import { collection, query, where, getDocs, addDoc, orderBy} from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, orderBy, updateDoc, doc} from "firebase/firestore";
 import { format} from 'date-fns';
 import {instantiationBySchedules} from 'utils/ScheduleUtil';
 
 interface ISchedule {
     startDate: string;
     endDate: string;
-    title : string;
-    tag : string;
-    contents : string;
+    title: string;
+    id: string;
+    tag: string;
+    contents: string;
   }
 
 export const getSchedulesByDate = async (date:Date) => {
@@ -30,11 +31,28 @@ export const getSchedulesByDate = async (date:Date) => {
     }
 }
 
-export const setSchedules = (schedule:ISchedule) => {
+export const addSchedule = async (schedule:ISchedule) => {
     try{
-        addDoc(collection(db, "schedule"), schedule);
+        const scheduleRef = await addDoc(collection(db, "schedule"), schedule);
+        await updateDoc(scheduleRef, { id: scheduleRef.id });
 
     }catch(error){
         alert('스케줄 등록에 실패하였습니다.');
+    }
+}
+
+export const setSchedule = async (schedule:ISchedule) => {
+    try{
+        const scheduleRef = doc(db, 'schedule', schedule.id);
+        await updateDoc(scheduleRef, {
+            startDate: schedule.startDate,
+            endDate: schedule.endDate,
+            title: schedule.title,
+            id: schedule.id,
+            tag: schedule.tag,
+            contents: schedule.contents
+        });
+    }catch(error){
+        alert('스케줄 수정에 실패하였습니다.');
     }
 }
