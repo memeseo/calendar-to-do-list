@@ -6,10 +6,10 @@ export class CellObject {
     _startDate: Date;
     _scheduleList : ScheduleObject[];
 
-    constructor(currentMonth:Date, startDate:Date, schedules:ScheduleObject[]){
+    constructor(currentMonth:Date, startDate:Date){
         this._currentMonth = currentMonth;
         this._startDate = startDate;
-        this._scheduleList = schedules;
+        this._scheduleList = [];
     }
 
     get startDate() {

@@ -8,30 +8,38 @@ import { CalendarModal } from 'Components/CalendarModal';
 import { CalendarObject } from 'model/Calendar';
 import { format} from 'date-fns';
 import { getSchedulesByDate } from 'apis/ScheduleApi';
+import store from 'reducer/index';
+import { fetchCalendar } from 'reducer/calendar';
 
 interface Props {
     currentCalendar : CalendarObject
 }
 
-export const CalendarCells = ({currentCalendar} : Props) => {
-
+export const CalendarCells = ({currentCalendar}:Props) => {
+  
     const monthStart = startOfMonth(currentCalendar.currentMonth),
           monthEnd   = endOfMonth(currentCalendar.currentMonth),
           startDate  = startOfWeek(monthStart),
           endDate    = endOfWeek(monthEnd);
 
     const getDays = async () => {
-        currentCalendar.cells = []; // 생각해보기
+        currentCalendar.cells = [];
         let days = currentCalendar.cells,
-            day  = startDate;
+            day = startDate,
+            promises = [];
+    
+        while (day <= endDate) {
 
-        while(day <= endDate){
-            // cell 객체 생성
-            const schedules = await getSchedulesByDate(day) || [];
-            days.push(new CellObject(currentCalendar.currentMonth, day, schedules));
+            promises.push(getSchedulesByDate(day));
+            days.push(new CellObject(currentCalendar.currentMonth, day));
             day = addDays(day, 1);
         }
-      
+    
+        const scheduleList = await Promise.all(promises);
+        scheduleList.forEach((schedules, index) => {
+            days[index].scheduleList = schedules;
+        });
+    
         return days;
     };
 
@@ -58,12 +66,13 @@ export const CalendarCells = ({currentCalendar} : Props) => {
         setModalOpenState(false);
     }
     const [days, setDays] = useState<CellObject[]>([]);
-
+    
     useEffect(()=> {
         getDays().then(res => {
             setDays(res);
         })
 
+        store.dispatch(fetchCalendar(currentCalendar));
     }, [currentCalendar.currentMonth])
 
     const getWeekRange = (date:Date) => {

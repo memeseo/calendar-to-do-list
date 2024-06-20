@@ -16,12 +16,23 @@ interface Props {
 
 export const CelendarTag = ({ tag, selectTag } : Props) => {
     const tags = useSelector((state:RootState) => state?.tag.tags);
+    const calendar = useSelector((state:RootState) => state?.calendar.calendar);
     
     const deleteTagByName = (tag:Tag, event:React.MouseEvent<SVGElement, MouseEvent>) => {
         event.stopPropagation();
-        
+
+        const usedTegList = calendar.cells.filter(date => {
+            return date.scheduleList.find(schedule => schedule.tag.name === tag.name)
+        });
+   
+        if(usedTegList.length > 0) {
+            alert(ERROR.FAILED_TO_DELETE_USING_TAG);
+            return;
+        }
+
         try{
             deleteTag(tag);
+            
         }catch(error){
             alert(ERROR.FAILED_TO_DELETE_TAG);
             return;

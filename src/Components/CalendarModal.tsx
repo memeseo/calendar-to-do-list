@@ -124,9 +124,8 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
         event.stopPropagation();
         if(!schedule) return;
 
-        schedule.tag = tag;
         setEmptyTagNameError(false);
-        setSelectedTag(schedule.tag);
+        setSelectedTag(tag);
     }
 
     const deleteSelectedTag = (event : React.MouseEvent<SVGElement>) => {
