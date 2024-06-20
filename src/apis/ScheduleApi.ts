@@ -29,6 +29,7 @@ export const getSchedulesByDate = async (date:Date) => {
   
     }catch(error){
          alert('스케줄을 가져오는데 실패하였습니다.');
+         throw error;
     }
 }
 
@@ -37,8 +38,9 @@ export const addSchedule = async (schedule:ISchedule) => {
         const scheduleRef = await addDoc(collection(db, "schedule"), schedule);
         await updateDoc(scheduleRef, { id: scheduleRef.id });
 
+        return scheduleRef.id;
     }catch(error){
-        alert('스케줄 등록에 실패하였습니다.');
+        throw error;
     }
 }
 
@@ -54,7 +56,7 @@ export const setSchedule = async (schedule:ISchedule) => {
             contents: schedule.contents
         });
     }catch(error){
-        alert('스케줄 수정에 실패하였습니다.');
+        throw error;
     }
 }
 
@@ -66,6 +68,6 @@ export const deleteScheduleByid = async (schedule:ScheduleObject) => {
     
         await deletePromises;
     }catch(error){
-        alert('스케줄을 삭제하는데 실패하였습니다.');
+        throw error;
     }
 }

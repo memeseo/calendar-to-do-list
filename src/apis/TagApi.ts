@@ -14,7 +14,7 @@ export const addTag = (tag:ITag) => {
         addDoc(collection(db,"tag"), tag);
 
     }catch(error){
-        alert('태그 등록에 실패하였습니다.');
+        throw error;
     }
 }
 
@@ -40,6 +40,6 @@ export const deleteTag = async (tag:Tag) => {
         await deletePromises;
       
     }catch(error){
-        alert('태그 삭제에 실패하였습니다.');
+        throw error;
     }
 }

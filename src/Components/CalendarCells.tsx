@@ -27,7 +27,7 @@ export const CalendarCells = ({currentCalendar} : Props) => {
 
         while(day <= endDate){
             // cell 객체 생성
-            const schedules = await getSchedulesByDate(day);
+            const schedules = await getSchedulesByDate(day) || [];
             days.push(new CellObject(currentCalendar.currentMonth, day, schedules));
             day = addDays(day, 1);
         }
@@ -95,7 +95,7 @@ export const CalendarCells = ({currentCalendar} : Props) => {
         });  
         const maxScheduleLength = maxSchedules._scheduleList.length;
 
-        return maxScheduleLength * 50 + 40 + maxScheduleLength * 15;
+        return maxScheduleLength * 50 + 40 + maxScheduleLength * 20;
     }
 
     return (

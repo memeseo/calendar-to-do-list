@@ -13,7 +13,7 @@ export const CellTop = styled.div`
 `;
 
 export const CellMiddle = styled.div`
-    width : 100%;
+    /* width : 100%; */
    
   
 `;
@@ -40,7 +40,7 @@ export const AddSchedule = styled.div<{ $isHover: boolean}>`
     }
 `;
 
-export const Cell = styled.div<{$cellbg:boolean, height:number}>`
+export const Cell = styled.div<{$isWeekend:boolean, $cellbg:boolean, height:number}>`
     width: calc(14% - 1px);
     flex: 1 0 auto;
     min-height : 140px;
@@ -52,17 +52,25 @@ export const Cell = styled.div<{$cellbg:boolean, height:number}>`
     box-sizing: border-box;
     border: 1px solid rgb(233, 233, 231);
     padding : 0.3%;
-    background-color: ${(props) => props.$cellbg ? 'white' : 'rgb(251, 251, 250)'};
+    background-color: ${(props) => props.$isWeekend ? 'rgb(251, 251, 250)' : 'white'};
 `;
 
-export const Day = styled.div<{$cellColor:boolean}>`
+export const Day = styled.div<{$isToday:boolean, $cellColor:boolean}>`
     width : 50%;
     float: right;
-    padding : 3%;
+    padding : ${(props) => !props.$isToday && '3%' };
     text-align: right;
     font-weight: 350;
     font-size: 14px;
-    color : ${(props) => props.$cellColor ? 'rgb(55,53,48)' : 'rgba(55, 53, 47, 0.5);'};
+    color : ${(props) => props.$isToday ? 'white' : props.$cellColor ? 'rgb(55,53,48)' : 'rgba(55, 53, 47, 0.5);'};
+    background-color : ${(props) => props.$isToday && 'rgb(235, 87, 87)' };
+    top : ${(props) => props.$isToday && '4px' };
+    right : ${(props) => props.$isToday && '4px' };
+    height : ${(props) => props.$isToday && '24px' };
+    width : ${(props) => props.$isToday && '24px' };
+    line-height : ${(props) => props.$isToday && '24px' };
+    border-radius : ${(props) => props.$isToday && '100%' };
+    text-align : ${(props) => props.$isToday && 'center' };
 `;
 
 export const Schedule = styled.div`

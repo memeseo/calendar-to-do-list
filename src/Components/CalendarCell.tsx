@@ -18,18 +18,29 @@ interface Props {
 export const CalendarCell = ({day, index, onDateClick, height, onScheduleClick} : Props) => {
     const [isHover, setHover] = useState<boolean>(false);
   
+    const isToday = (date:Date) => {
+        const currentDate = new Date();
+        return format(currentDate,'yyyy-MM-dd') === format(date,'yyyy-MM-dd');
+    }
+
+    const isWeekend = (date:Date) => {
+        const day = date.getDay();
+
+        return day === 0 || day === 6;
+    }
+
     return (
         <>
-            <Cell key={index} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} $cellbg={day.isCurrentMoth()} height={height}>
+            <Cell key={index} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} $isWeekend={isWeekend(day.startDate)} $cellbg={day.isCurrentMoth()} height={height}>
                 <CellTop>
                     <AddSchedule $isHover={isHover} onClick={() => onDateClick(day)}>
                         <motion.button><GoPlus/></motion.button>
                     </AddSchedule>
-                    <Day $cellColor={day.isCurrentMoth()}>{format(day.startDate, 'd') === "1" ? format(day.startDate, 'M월 d일') : format(day.startDate, 'd')}</Day>
+                    <Day $isToday={isToday(day.startDate)} $cellColor={day.isCurrentMoth()}>{format(day.startDate, 'd') === "1" ? format(day.startDate, 'M월 d일') : format(day.startDate, 'd')}</Day>
                 </CellTop>
                 <CellMiddle>
                 {
-                    day.scheduleList.map((schedule, sindex) => ( // 여기서 스케줄을 보내야 함
+                    day.scheduleList.map((schedule, sindex) => ( 
                         <Schedule onClick={() => onScheduleClick(schedule, day)} key={sindex}>
                             <div>{schedule.title}</div>
                             <TagNameWrapper color={schedule.tag.color}>{schedule.tag.name}</TagNameWrapper>

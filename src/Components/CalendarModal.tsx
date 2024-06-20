@@ -66,8 +66,13 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
             contents : data.contents,
         }
 
-        isSchedule ? setSchedule(scheduleObject) : addSchedule(scheduleObject);
-
+        try{
+            isSchedule ? setSchedule(scheduleObject) : addSchedule(scheduleObject).then((res) => {schedule.id = res;});
+        }catch(error) {
+            alert(`스케줄을 ${isSchedule ? '수정' : '추가' }하는데 실패하였습니다.`);
+            return;
+        }
+      
         schedule.title = data.title;
         schedule.tag = selectedTag;
         schedule.contents = data.contents;
@@ -92,10 +97,17 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
         if(event.key === "Enter" && !event.nativeEvent.isComposing && tagName.length > 0 && tagName.length < 30 && !isDuplicate) {
             const newTag = new Tag(tagName, getColor());
 
-            addTag({
-                _name : newTag.name,
-                _color : newTag.color
-            });
+            try{
+
+                addTag({
+                    _name : newTag.name,
+                    _color : newTag.color
+                });
+
+            }catch(error){
+                alert('태그 등록에 실패하였습니다.');
+                return;
+            }
 
             store.dispatch(addToTags([...tags, newTag]));
             setTagName('');
@@ -125,7 +137,13 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
     const deleteSchedule = () => {
         if(!isSchedule || !selectedDate) return;
 
-        schedule && deleteScheduleByid(schedule);
+        try{    
+            schedule && deleteScheduleByid(schedule);
+        }catch(error){
+            alert('스케줄을 삭제하는데 실패하였습니다.');
+            return;
+        }
+        
         selectedDate.scheduleList = selectedDate?.scheduleList.filter(schedule => schedule.id !== selectedSchedule.id);
         onOverlayClick();
     }

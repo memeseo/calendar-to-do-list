@@ -18,8 +18,14 @@ export const CelendarTag = ({ tag, selectTag } : Props) => {
     
     const deleteTagByName = (tag:Tag, event:React.MouseEvent<SVGElement, MouseEvent>) => {
         event.stopPropagation();
-    
-        deleteTag(tag);
+        
+        try{
+            deleteTag(tag);
+        }catch(error){
+            alert('태그 삭제에 실패하였습니다.');
+            return;
+        }
+       
         const newTags = tags.filter(savedTag => savedTag._name !== tag._name);
         store.dispatch(removeTag(newTags));
     }
