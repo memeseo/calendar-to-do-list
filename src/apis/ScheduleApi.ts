@@ -3,6 +3,7 @@ import { collection, query, where, getDocs, addDoc, orderBy, updateDoc, doc, del
 import { format} from 'date-fns';
 import {instantiationBySchedules} from 'utils/ScheduleUtil';
 import { ScheduleObject } from 'model/Schedule';
+import { ERROR } from 'constants/Messages';
 
 interface ISchedule {
     startDate: string;
@@ -28,7 +29,7 @@ export const getSchedulesByDate = async (date:Date) => {
         return schedules.length > 0 ? instantiationBySchedules(schedules) : [];
   
     }catch(error){
-         alert('스케줄을 가져오는데 실패하였습니다.');
+         alert(ERROR.FAILED_TO_FETCH_SCHEDULES);
          throw error;
     }
 }

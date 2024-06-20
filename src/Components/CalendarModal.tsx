@@ -18,6 +18,7 @@ import { useSelector } from 'react-redux';
 import store, { RootState } from 'reducer/index';
 import { addToTags } from 'reducer/tag';
 import { IoTrashOutline } from "react-icons/io5";
+import { ERROR } from 'constants/Messages';
 
 interface Props {
     isModalOpen : boolean;
@@ -69,7 +70,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
         try{
             isSchedule ? setSchedule(scheduleObject) : addSchedule(scheduleObject).then((res) => {schedule.id = res;});
         }catch(error) {
-            alert(`스케줄을 ${isSchedule ? '수정' : '추가' }하는데 실패하였습니다.`);
+            alert(isSchedule ? ERROR.FAILED_TO_UPDATE_SCHEDULE : ERROR.FAILED_TO_ADD_SCHEDULE);
             return;
         }
       
@@ -105,7 +106,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
                 });
 
             }catch(error){
-                alert('태그 등록에 실패하였습니다.');
+                alert(ERROR.FAILED_TO_ADD_TAG);
                 return;
             }
 
@@ -140,7 +141,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
         try{    
             schedule && deleteScheduleByid(schedule);
         }catch(error){
-            alert('스케줄을 삭제하는데 실패하였습니다.');
+            alert(ERROR.FAILED_TO_DELETE_SCHEDULE);
             return;
         }
         

@@ -4,6 +4,7 @@ import { instantiationByTag } from 'utils/TagUtil';
 import store from 'reducer/index';
 import { fetchTags } from 'reducer/tag';
 import { Tag } from 'model/Tag';
+import { ERROR } from 'constants/Messages';
 
 interface ITag {
     _name : string,
@@ -27,7 +28,7 @@ export const getTags = async () => {
 
         newTags.length > 0 && store.dispatch(fetchTags(newTags))
     }catch(error){
-        alert('태그를 가져올 수 없습니다.');
+        alert(ERROR.FAILED_TO_FETCH_TAGS);
     }
 }
 

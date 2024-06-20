@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'reducer/index';
 import { removeTag } from 'reducer/tag';
 import store from 'reducer/index';
+import { ERROR } from 'constants/Messages';
 
 interface Props {
     tag : Tag;
@@ -22,7 +23,7 @@ export const CelendarTag = ({ tag, selectTag } : Props) => {
         try{
             deleteTag(tag);
         }catch(error){
-            alert('태그 삭제에 실패하였습니다.');
+            alert(ERROR.FAILED_TO_DELETE_TAG);
             return;
         }
        
