@@ -18,6 +18,7 @@ export const CalendarModalWrapper = styled(motion.form)`
     .schedule_delete__Button{
         text-align: right;
         color: rgba(55, 53, 47, 0.45);
+        cursor: pointer;
     }
 `;
 
@@ -85,7 +86,6 @@ export const ModalDate = styled.div`
 export const ModalTag = styled.div<{ $isTagInput: boolean}>`
     width : 100%;
     height: 6%;
-
     .title{
         svg{
             padding : 1px;
@@ -142,10 +142,10 @@ export const TagOutline = styled.div<{$isError: boolean}>`
 `;
 
 
-export const CreateTagWrapper = styled.div`
+export const CreateTagWrapper = styled.div<{$isSchedule: boolean}>`
     position: fixed;
-    top: 34%;
-    width: 30%;
+    top : ${(props) => props.$isSchedule ? `215px` : `${215 - 21}px`};
+    width: 60%;
     z-index: 1;
     height : auto;
     border-radius: 5px;
@@ -159,6 +159,8 @@ export const CreateTagWrapper = styled.div`
         display: flex;
         padding : 0 2%;
         height: 30px;
+        /* display: table-cell;
+        vertical-align: middle; */
         input {
             box-shadow: rgba(55, 53, 47, 0.16) 0px -1px inset;
             border : none;
@@ -186,7 +188,10 @@ export const SelectdTagWapper = styled.div<{color: string}>`
     height : 70%;
     padding : 1% 2% 1% 2%;
     width : auto;
+    margin-top : 0.8%;
+
     .selected-tag{
+       
         width : 100%;
         font-size: 12px;
     }
@@ -244,7 +249,7 @@ export const TagWrapper = styled.div<{color:string}>`
         svg{
             width : 5%;
             float: right;
-            font-size: 20px;
+            font-size: 15px;
             color: rgba(55, 53, 47, 0.45);
         }
 `
@@ -299,7 +304,7 @@ export const ModalSubmit = styled.div`
 
     .submit-button{
         border : none;
-        background-color: rgb(233,87,72, 1);
+        background-color: rgb(235, 87, 87);
         color : white;
         &:hover{
             background-color: rgb(220,87,72);

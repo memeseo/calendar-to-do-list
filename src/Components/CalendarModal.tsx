@@ -1,5 +1,5 @@
 
-import { AnimatePresence, useViewportScroll} from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { format} from 'date-fns';
 import { useForm } from 'react-hook-form';
 import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalContents, ModalSubmit,
@@ -35,13 +35,12 @@ interface IForm {
 
 
 export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, selectedSchedule} : Props) => {
-
+ 
     const isSchedule = !!selectedSchedule,
           schedule   = selectedDate && !isSchedule ? new ScheduleObject(format(selectedDate.startDate, 'yyyy-MM-dd'), null, '', '', '') : selectedSchedule,
           tags       = useSelector((state:RootState) => state?.tag.tags),
           currentTag = tags.find(tag => tag?.name === schedule?.tag?.name);
 
-    const { scrollY } = useViewportScroll();
     const { register, handleSubmit, formState: { errors }} = useForm<IForm>();
     const [isTagInput, setTagInput] = useState(false);
     const [tagName, setTagName] = useState("");
@@ -163,7 +162,10 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
                             onClick={setTagInputState}
                             exit={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            style={{ top: scrollY.get() + 100 }}
+                            style={{   position: 'fixed',
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)' }}
                             onSubmit={handleSubmit(onValid)}
                             onKeyPress={(e:React.KeyboardEvent<HTMLElement>) => { e.key === 'Enter' && e.preventDefault(); }}
                         >
@@ -202,7 +204,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
                                             }
                                             </div> 
                                              : (
-                                            <CreateTagWrapper>
+                                            <CreateTagWrapper $isSchedule={isSchedule}>
                                                 <div className="tag-input-wrapper">
                                                     {   
                                                         selectedTag ?

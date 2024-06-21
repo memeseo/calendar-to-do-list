@@ -51,6 +51,7 @@ export const CalendarCells = ({currentCalendar}:Props) => {
         setSelectedDate(cell);
         setSelectedSchedule(schedule);
         setModalOpenState(true);
+        document.body.style.overflow = 'hidden';
     }
 
     const onDateClick = (cell:CellObject) => {
@@ -58,12 +59,14 @@ export const CalendarCells = ({currentCalendar}:Props) => {
         setSelectedDate(cell);
         setSelectedSchedule(null);
         setModalOpenState(true);
+        document.body.style.overflow = 'hidden';
     };
 
     const onOverlayClick = () => {
         setSelectedDate(null);
         setSelectedSchedule(null);
         setModalOpenState(false);
+        document.body.style.overflow = 'auto';
     }
     const [days, setDays] = useState<CellObject[]>([]);
     
