@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { CalendarObject } from 'model/Calendar';
 import { CellObject } from "model/Cell";
 import { Tag } from 'model/Tag';
 

@@ -10,13 +10,14 @@ import { format} from 'date-fns';
 import { getSchedulesByDate } from 'apis/ScheduleApi';
 import store from 'reducer/index';
 import { fetchCalendar } from 'reducer/calendar';
+import { setLoading } from 'reducer/ui';
 
 interface Props {
     currentCalendar : CalendarObject
 }
 
 export const CalendarCells = ({currentCalendar}:Props) => {
-  
+    
     const monthStart = startOfMonth(currentCalendar.currentMonth),
           monthEnd   = endOfMonth(currentCalendar.currentMonth),
           startDate  = startOfWeek(monthStart),
@@ -71,8 +72,11 @@ export const CalendarCells = ({currentCalendar}:Props) => {
     const [days, setDays] = useState<CellObject[]>([]);
     
     useEffect(()=> {
+        store.dispatch(setLoading(true));
+        
         getDays().then(res => {
             setDays(res);
+            store.dispatch(setLoading(false));
         })
 
         store.dispatch(fetchCalendar(currentCalendar));
