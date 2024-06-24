@@ -1,46 +1,37 @@
-# Getting Started with Create React App
+## 실행 환경
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+본 프로젝트는 다음과 같은 프레임워크 혹은 라이브러리 환경에서 실행됩니다.
 
-## Available Scripts
+![js](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) - 기존에 사용하던 Vue 프레임워크와 비교하며 공부하기 위해 채용함<br/>
+![js](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white) - 문법을 제한함으로써 유지보수성을 높이기 위해 채용함<br/>
+![js](https://img.shields.io/badge/styled--components-DB7093?style=for-the-badge&logo=styled-components&logoColor=white) - 태그를 컴포넌트 처럼 사용해 각 태그를 좀더 시맨틱하게 사용하기 위해 채용함<br/>
+![js](https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white) - 기타 환경을 저장해 Experts 리스팅을 하기 위해 채용함
+<br/>
+<br/>
+## 실행 하기
 
-In the project directory, you can run:
+`npm i` 이후 `npm run start`
+<br/>
+<br/>
+## Structure
 
-### `npm start`
+```
+client
+├── public                          
+└── src
+    ├── apis                        # api 관련 함수
+    ├── assets                      # resoucres
+    │   └── Common                  # 공용 styled-component, theme
+    │            
+    └── Components                  # 컴포넌트      
+    ├── constants                   # 상수
+    ├── model                       # 객체
+    ├── reducer                     # redux
+    ├── Routes                      # 페이지
+    ├── types                       # 외부 파일 타입 정의
+    └── utile                       # 유틸 함수    
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
+<br/>
+<br/>
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
