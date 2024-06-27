@@ -1,5 +1,5 @@
 import {db} from 'Routes/config';
-import { collection, getDocs, addDoc, query, where, deleteDoc, doc} from "firebase/firestore";
+import { collection, getDocs, addDoc, query, where, deleteDoc, doc, updateDoc, serverTimestamp, orderBy} from "firebase/firestore";
 import { instantiationByTag } from 'utils/TagUtil';
 import store from 'reducer/index';
 import { fetchTags } from 'reducer/tag';
@@ -10,10 +10,12 @@ interface ITag {
     _name : string,
     _color : string
 }
-export const addTag = (tag:ITag) => {
+export const addTag = async (tag:ITag) => {
     try{
-        addDoc(collection(db,"tag"), tag);
+        const tagRef = await addDoc(collection(db,"tag"), {...tag, _date: serverTimestamp()});
+        updateDoc(tagRef, { _id: tagRef.id });
 
+        return tagRef.id;
     }catch(error){
         throw error;
     }
@@ -21,12 +23,18 @@ export const addTag = (tag:ITag) => {
 
 export const getTags = async () => {
     try{
-        let fetchedTags = await getDocs(collection(db, "tag")),
-            tags = fetchedTags.docs.map(doc => ({ ...doc.data() }));
-    
-        const newTags = tags.map(tag => instantiationByTag(tag));
 
-        newTags.length > 0 && store.dispatch(fetchTags(newTags))
+        const TagQ = await query(
+            collection(db, "tag"),
+            orderBy("_date", "asc")
+        );
+        
+        const scheduleQuerySnapshot = await getDocs(TagQ),
+              tags = scheduleQuerySnapshot.docs.map(doc => ({ ...doc.data() }));
+        
+        const newTags = tags.map(tag => instantiationByTag(tag));
+        newTags.length > 0 && store.dispatch(fetchTags(newTags));
+
     }catch(error){
         alert(ERROR.FAILED_TO_FETCH_TAGS);
     }

@@ -9,7 +9,6 @@ const ui = createSlice({
     initialState,
     reducers : {
         setLoading: (state, action) => {
-            console.log('후아유 너 뉘기야 ', action.payload)
             state.isLoading = action.payload;
         }
     }

@@ -4,6 +4,7 @@ import { format} from 'date-fns';
 import {instantiationBySchedules} from 'utils/ScheduleUtil';
 import { ScheduleObject } from 'model/Schedule';
 import { ERROR } from 'constants/Messages';
+import store, { RootState } from 'reducer/index';
 
 interface ISchedule {
     startDate: string;
@@ -24,14 +25,25 @@ export const getSchedulesByDate = async (date:Date) => {
         );
         
         const querySnapshot = await getDocs(q),
-              schedules     = querySnapshot.docs.map(doc => ({ ...doc.data() }));
-        
+              schedules     = querySnapshot.docs.map(doc => {
+                const schedule = doc.data(),
+                      tag      = getMatchedTag(schedule.tag);
+             
+                schedule.tag = tag;
+                return schedule
+              });
+     
         return schedules.length > 0 ? instantiationBySchedules(schedules) : [];
   
     }catch(error){
          alert(ERROR.FAILED_TO_FETCH_SCHEDULES);
          throw error;
     }
+}
+
+const getMatchedTag = (tagId:string) => {
+    const state: RootState = store.getState();
+    return state.tag.tags?.find(tag => tag.id === tagId);
 }
 
 export const addSchedule = async (schedule:ISchedule) => {

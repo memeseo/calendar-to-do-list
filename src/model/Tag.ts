@@ -1,10 +1,12 @@
 export class Tag {
     _color : string;
     _name : string;
-    
-    constructor(name:string, color:string){
+    _id: string;
+
+    constructor(name:string, color:string, id:string){
         this._name = name;
         this._color = color;
+        this._id = id;
     }
 
     get name(){
@@ -21,5 +23,13 @@ export class Tag {
 
     set color(color: string){
         this._color = color;
+    }
+
+    get id(){
+        return this._id;
+    }
+
+    set id(id: string){
+        this._id = id;
     }
 }

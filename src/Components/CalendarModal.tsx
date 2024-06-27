@@ -62,7 +62,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
             endDate : schedule.endDate,
             title : data.title,
             id: schedule.id,
-            tag : JSON.stringify(selectedTag),
+            tag : selectedTag.id,
             contents : data.contents,
         }
 
@@ -95,14 +95,16 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
         const isDuplicate = tags.some(tag => tag.name?.trim() === tagName?.trim());
 
         if(event.key === "Enter" && !event.nativeEvent.isComposing && tagName.length > 0 && tagName.length < 30 && !isDuplicate) {
-            const newTag = new Tag(tagName, getColor());
+            const newTag = new Tag(tagName, getColor(), '');
 
             try{
 
                 addTag({
                     _name : newTag.name,
                     _color : newTag.color
-                });
+                }).then((res) => {
+                    newTag.id = res;
+                })
 
             }catch(error){
                 alert(ERROR.FAILED_TO_ADD_TAG);
