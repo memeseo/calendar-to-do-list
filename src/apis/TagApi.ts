@@ -5,6 +5,7 @@ import store from 'reducer/index';
 import { fetchTags } from 'reducer/tag';
 import { Tag } from 'model/Tag';
 import { ERROR } from 'constants/Messages';
+import { format } from 'date-fns';
 
 interface ITag {
     _name : string,
@@ -51,4 +52,16 @@ export const deleteTag = async (tag:Tag) => {
     }catch(error){
         throw error;
     }
+}
+
+export const getUsedTag = async (tag:Tag) => {
+
+    const q = await query(
+                        collection(db, "schedule"),
+                        where("tag", "==", tag.id)
+                    ),
+        querySnapshot = await getDocs(q),
+        schedule = querySnapshot.docs.map(doc => ({...doc.data()}));
+
+    return schedule?.length > 0;
 }

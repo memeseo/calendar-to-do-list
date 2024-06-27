@@ -1,7 +1,7 @@
 import { IoTrashOutline } from "react-icons/io5";
 import { Tag } from 'model/Tag';
 import { TagWrapper } from 'asset/CalendarModal';
-import { deleteTag } from 'apis/TagApi';
+import { deleteTag, getUsedTag } from 'apis/TagApi';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducer/index';
 import { removeTag } from 'reducer/tag';
@@ -18,17 +18,11 @@ export const CelendarTag = ({ tag, selectTag } : Props) => {
     const tags = useSelector((state:RootState) => state?.tag.tags);
     const calendar = useSelector((state:RootState) => state?.calendar.calendar);
     
-    const deleteTagByName = (tag:Tag, event:React.MouseEvent<SVGElement, MouseEvent>) => {
+    const deleteTagByName = async (tag:Tag, event:React.MouseEvent<SVGElement, MouseEvent>) => {
         event.stopPropagation();
 
-        const usedTegList = calendar.cells.filter(date => {
-            return date.scheduleList.find(schedule => schedule.tag.name === tag.name)
-        });
-   
-        if(usedTegList.length > 0) {
-            alert(ERROR.FAILED_TO_DELETE_USING_TAG);
-            return;
-        }
+        const isUsedTag = await getUsedTag(tag);
+        if(isUsedTag) {alert(ERROR.FAILED_TO_DELETE_USING_TAG); return;}
 
         try{
             deleteTag(tag);
