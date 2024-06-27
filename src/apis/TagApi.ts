@@ -5,7 +5,6 @@ import store from 'reducer/index';
 import { fetchTags } from 'reducer/tag';
 import { Tag } from 'model/Tag';
 import { ERROR } from 'constants/Messages';
-import { format } from 'date-fns';
 
 interface ITag {
     _name : string,
