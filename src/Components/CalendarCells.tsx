@@ -32,7 +32,7 @@ export const CalendarCells = ({currentCalendar}:Props) => {
         while (day <= endDate) {
 
             promises.push(getSchedulesByDate(day));
-            days.push(new CellObject(currentCalendar.currentMonth, day));
+            days.push(new CellObject(day));
             day = addDays(day, 1);
         }
     
@@ -121,7 +121,7 @@ export const CalendarCells = ({currentCalendar}:Props) => {
                     days.map((day, index) => {
                         const height = getCellHeight(day._startDate)
                         return(
-                            <CalendarCell key={index} day={day} index={index} onDateClick={onDateClick} onScheduleClick={onScheduleClick} height={height}/>
+                            <CalendarCell key={index} day={day} currentMonth={currentCalendar.currentMonth} onDateClick={onDateClick} onScheduleClick={onScheduleClick} height={height}/>
                         )
                     })
                 }

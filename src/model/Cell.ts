@@ -2,12 +2,11 @@ import { format } from 'date-fns';
 import { ScheduleObject } from 'model/Schedule';
 
 export class CellObject {
-    _currentMonth: Date;
+
     _startDate: Date;
     _scheduleList : ScheduleObject[];
 
-    constructor(currentMonth:Date, startDate:Date){
-        this._currentMonth = currentMonth;
+    constructor(startDate:Date){
         this._startDate = startDate;
         this._scheduleList = [];
     }
@@ -20,14 +19,6 @@ export class CellObject {
         this._startDate = startDate;
     }
 
-    get currentMonth() {
-        return this._currentMonth;
-    }
-
-    set currentMonth(currentMonth:Date){
-        this._currentMonth = currentMonth;
-    }
-
     get scheduleList() {
         return this._scheduleList;
     }
@@ -36,7 +27,7 @@ export class CellObject {
         this._scheduleList = scheduleList;
     }
     
-    isCurrentMoth(){
-        return format(this._currentMonth, "M") === format(this._startDate, "M")
-    }
+    // isCurrentMoth(){
+    //     return format(this._currentMonth, "M") === format(this._startDate, "M")
+    // }
 }

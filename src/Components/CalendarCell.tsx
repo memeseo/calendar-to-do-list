@@ -9,13 +9,13 @@ import { ScheduleObject } from 'model/Schedule';
 
 interface Props {
     day : CellObject;
-    index : number;
+    currentMonth : Date;
     onDateClick(date: CellObject): void
     onScheduleClick(schedule: ScheduleObject, date:CellObject): void,
     height : number
 }
 
-export const CalendarCell = ({day, index, onDateClick, height, onScheduleClick} : Props) => {
+export const CalendarCell = ({day, currentMonth, onDateClick, height, onScheduleClick} : Props) => {
     const [isHover, setHover] = useState<boolean>(false);
   
     const isToday = (date:Date) => {
@@ -29,14 +29,18 @@ export const CalendarCell = ({day, index, onDateClick, height, onScheduleClick} 
         return day === 0 || day === 6;
     }
 
+    const isCurrentMoth = (date:Date) => {
+        return format(currentMonth, "M") === format(date, "M");
+    }
+
     return (
         <>
-            <Cell key={index} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} $isWeekend={isWeekend(day.startDate)} $cellbg={day.isCurrentMoth()} height={height}>
+            <Cell onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} $isWeekend={isWeekend(day.startDate)} $cellbg={isCurrentMoth(day.startDate)} height={height}>
                 <CellTop>
                     <AddSchedule $isHover={isHover} onClick={() => onDateClick(day)}>
                         <motion.button><GoPlus/></motion.button>
                     </AddSchedule>
-                    <Day $isToday={isToday(day.startDate)} $cellColor={day.isCurrentMoth()}>{format(day.startDate, 'd') === "1" && !isToday(day.startDate) ? format(day.startDate, 'M월 d일') : format(day.startDate, 'd')}</Day>
+                    <Day $isToday={isToday(day.startDate)} $cellColor={isCurrentMoth(day.startDate)}>{format(day.startDate, 'd') === "1" && !isToday(day.startDate) ? format(day.startDate, 'M월 d일') : format(day.startDate, 'd')}</Day>
                 </CellTop>
                 <CellMiddle>
                 {
