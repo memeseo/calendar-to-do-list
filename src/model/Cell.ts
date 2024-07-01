@@ -1,5 +1,5 @@
-import { format } from 'date-fns';
 import { ScheduleObject } from 'model/Schedule';
+import { format } from 'date-fns';
 
 export class CellObject {
 
@@ -26,8 +26,13 @@ export class CellObject {
     set scheduleList(scheduleList: ScheduleObject[]){
         this._scheduleList = scheduleList;
     }
-    
-    // isCurrentMoth(){
-    //     return format(this._currentMonth, "M") === format(this._startDate, "M")
-    // }
+
+    isWeekend(){
+        const day = this.startDate.getDay();
+        return day === 0 || day === 6;
+    }
+
+    isCurrentMoth(currentMonth:Date){
+        return format(currentMonth, "M") === format(this.startDate, "M");
+    }
 }

@@ -23,24 +23,15 @@ export const CalendarCell = ({day, currentMonth, onDateClick, height, onSchedule
         return format(currentDate,'yyyy-MM-dd') === format(date,'yyyy-MM-dd');
     }
 
-    const isWeekend = (date:Date) => {
-        const day = date.getDay();
-
-        return day === 0 || day === 6;
-    }
-
-    const isCurrentMoth = (date:Date) => {
-        return format(currentMonth, "M") === format(date, "M");
-    }
 
     return (
         <>
-            <Cell onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} $isWeekend={isWeekend(day.startDate)} $cellbg={isCurrentMoth(day.startDate)} height={height}>
+            <Cell onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} $isWeekend={day.isWeekend()} $cellbg={day.isCurrentMoth(currentMonth)} height={height}>
                 <CellTop>
                     <AddSchedule $isHover={isHover} onClick={() => onDateClick(day)}>
                         <motion.button><GoPlus/></motion.button>
                     </AddSchedule>
-                    <Day $isToday={isToday(day.startDate)} $cellColor={isCurrentMoth(day.startDate)}>{format(day.startDate, 'd') === "1" && !isToday(day.startDate) ? format(day.startDate, 'M월 d일') : format(day.startDate, 'd')}</Day>
+                    <Day $isToday={isToday(day.startDate)} $cellColor={day.isCurrentMoth(currentMonth)}>{format(day.startDate, 'd') === "1" && !isToday(day.startDate) ? format(day.startDate, 'M월 d일') : format(day.startDate, 'd')}</Day>
                 </CellTop>
                 <CellMiddle>
                 {

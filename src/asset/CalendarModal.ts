@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { motion } from "framer-motion";
+import { Wrapper } from 'asset/DatePickerWrapper';
 
 export const CalendarModalWrapper = styled(motion.form)`
     position: absolute;
@@ -53,13 +54,11 @@ export const ModalDate = styled.div`
     width : 100%;
     height: 6%;
     
-    div{
+    .title{
         display: flex;
         align-items: center;
         font-size: 14px;
         font-weight: 350;
-    }
-    .title{
         svg{
             padding : 1px;
             margin-right : 3%;
@@ -70,18 +69,19 @@ export const ModalDate = styled.div`
         height: 100%;
         float: left;
     }
+
     .contents{
-        padding : 0 2%;
+        padding: 0px;
+        align-items: center;
+        font-size: 14px;
+        font-weight: 350;
+        display: inline-flex; 
         width : 75%;
         height: 100%;
         float: right;
-        cursor: pointer;
-        &:hover{
-            background-color: rgb(55, 53, 47, 0.08);
-            border-radius: 5px;
-        }
     }
 `;
+
 
 export const ModalTag = styled.div<{ $isTagInput: boolean}>`
     width : 100%;

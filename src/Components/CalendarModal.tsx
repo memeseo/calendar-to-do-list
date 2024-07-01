@@ -7,7 +7,7 @@ import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalConte
 import { FaCalendarDays } from "react-icons/fa6";
 import { FaHashtag } from "react-icons/fa";
 import { CellObject } from 'model/Cell';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CelendarTag } from "Components/CelendarTag";
 import { Tag } from 'model/Tag';
 import { ScheduleObject } from "model/Schedule";
@@ -19,6 +19,8 @@ import store, { RootState } from 'reducer/index';
 import { addToTags } from 'reducer/tag';
 import { IoTrashOutline } from "react-icons/io5";
 import { ERROR } from 'constants/Messages';
+import { DatePickerWrapper } from 'Components/DatePickerWrapper';
+
 
 interface Props {
     isModalOpen : boolean;
@@ -191,7 +193,13 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
                                 <div className="title">
                                     <FaCalendarDays/> 달력
                                 </div>
-                                <div className="contents">{schedule ? format(schedule.startDate, 'yyyy M월 d일') : null}</div>
+                              
+                                <div className="contents">
+                                    {
+                                     schedule && <DatePickerWrapper schedule={schedule}></DatePickerWrapper>
+                                    }
+                                </div>
+
                             </ModalDate>
                             <ModalTag $isTagInput={isTagInput}>
                                 <div className="title">
