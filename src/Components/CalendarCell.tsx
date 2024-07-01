@@ -36,7 +36,7 @@ export const CalendarCell = ({day, index, onDateClick, height, onScheduleClick} 
                     <AddSchedule $isHover={isHover} onClick={() => onDateClick(day)}>
                         <motion.button><GoPlus/></motion.button>
                     </AddSchedule>
-                    <Day $isToday={isToday(day.startDate)} $cellColor={day.isCurrentMoth()}>{format(day.startDate, 'd') === "1" ? format(day.startDate, 'M월 d일') : format(day.startDate, 'd')}</Day>
+                    <Day $isToday={isToday(day.startDate)} $cellColor={day.isCurrentMoth()}>{format(day.startDate, 'd') === "1" && !isToday(day.startDate) ? format(day.startDate, 'M월 d일') : format(day.startDate, 'd')}</Day>
                 </CellTop>
                 <CellMiddle>
                 {
