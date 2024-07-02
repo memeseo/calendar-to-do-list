@@ -39,7 +39,7 @@ interface IForm {
 export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, selectedSchedule} : Props) => {
  
     const isSchedule = !!selectedSchedule,
-          schedule   = selectedDate && !isSchedule ? new ScheduleObject(format(selectedDate.startDate, 'yyyy-MM-dd'), null, '', '', '') : selectedSchedule,
+          schedule   = selectedDate && !isSchedule ? new ScheduleObject(format(selectedDate.startDate, 'yyyy-MM-dd HH:mm:ss'), format(selectedDate.startDate, 'yyyy-MM-dd HH:mm:ss'), null, '', '', '') : selectedSchedule,
           tags       = useSelector((state:RootState) => state?.tag.tags),
           currentTag = tags.find(tag => tag?.name === schedule?.tag?.name);
 
@@ -58,7 +58,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
             setEmptyTagNameError(true);
             return;
         }
-
+    
         const scheduleObject = {
             startDate : schedule.startDate,
             endDate : schedule.endDate,

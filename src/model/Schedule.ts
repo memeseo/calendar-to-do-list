@@ -1,6 +1,7 @@
 import { Tag } from 'model/Tag';
 
 export class ScheduleObject {
+    _currentDate : string;
     _startDate : string;
     _endDate : string;
     _tag : Tag | null;
@@ -9,13 +10,21 @@ export class ScheduleObject {
     _contents : string;
 
 
-    constructor(startDate:string, tag:Tag | null, id:string, title:string, contents:string){
+    constructor(currentDate:string, startDate:string, tag:Tag | null, id:string, title:string, contents:string){
+        this._currentDate = currentDate;
         this._startDate = startDate;
         this._endDate = "";
         this._tag = tag;
         this._id = id;
         this._title = title;
         this._contents = contents;
+    }
+    get currentDate(){
+        return this._startDate;
+    }
+
+    set currentDate(currentDate:string){
+        this._currentDate = currentDate;
     }
 
     get startDate(){

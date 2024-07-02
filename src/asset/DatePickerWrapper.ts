@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const Wrapper = styled.div`
+export const Wrapper = styled.div<{$endDateToggle:boolean}>`
     width: 100%;
     height: 100%;
     line-height: 100%;
@@ -10,6 +10,10 @@ export const Wrapper = styled.div`
     align-items: center;
     font-size: 14px;
     font-weight: 350;
+
+    .react-datepicker__day {
+        pointer-events: ${(props) => !props.$endDateToggle && 'none'};
+    }
 
     .react-datepicker__input-container input{
         padding : 0 2%;
@@ -45,7 +49,7 @@ export const Wrapper = styled.div`
         background-color: white;
     }
     .react-datepicker-popper{
-        transform: translate(200.5px, 200.5px) !important;
+        transform: translate(260.5px, 210.5px) !important;
     }
 
     .react-datepicker__day--selected{
