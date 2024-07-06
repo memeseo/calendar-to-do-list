@@ -1,6 +1,6 @@
 
 import { AnimatePresence } from "framer-motion";
-import { format} from 'date-fns';
+import { format, eachDayOfInterval } from 'date-fns';
 import { useForm } from 'react-hook-form';
 import {CalendarModalWrapper, Overley, ModalTop, ModalDate, ModalTag, ModalContents, ModalSubmit,
         ErrorMessage, CreateTagWrapper, TagList, SelectdTagWapper, TagNameWrapper, TagOutline} from 'asset/CalendarModal';
@@ -20,6 +20,7 @@ import { addToTags } from 'reducer/tag';
 import { IoTrashOutline } from "react-icons/io5";
 import { ERROR } from 'constants/Messages';
 import { DatePickerWrapper } from 'Components/DatePickerWrapper';
+import { setTime } from 'utils/ScheduleUtil';
 
 
 interface Props {
@@ -37,17 +38,26 @@ interface IForm {
 
 
 export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, selectedSchedule} : Props) => {
- 
     const isSchedule = !!selectedSchedule,
-          schedule   = selectedDate && !isSchedule ? new ScheduleObject(format(selectedDate.startDate, 'yyyy-MM-dd HH:mm:ss'), format(selectedDate.startDate, 'yyyy-MM-dd HH:mm:ss'), null, '', '', '') : selectedSchedule,
+          schedule   = selectedDate && !isSchedule ? new ScheduleObject(selectedDate.startDate, selectedDate.startDate, selectedDate.startDate, null, '', '', '') : selectedSchedule,
           tags       = useSelector((state:RootState) => state?.tag.tags),
           currentTag = tags.find(tag => tag?.name === schedule?.tag?.name);
-
     const { register, handleSubmit, formState: { errors }} = useForm<IForm>();
     const [isTagInput, setTagInput] = useState(false);
     const [tagName, setTagName] = useState("");
     const [selectedTag, setSelectedTag] = useState<Tag | null>(currentTag ? currentTag : null);
     const [emptyTagNameError, setEmptyTagNameError] = useState<boolean>(false);
+
+    const getAllSelectedDates = () => {
+        if(!schedule){
+            return;
+        }
+
+        const dates = eachDayOfInterval({ start: schedule.currentDate, end: schedule.endDate });
+        return dates.map(date => {
+            return setTime(new Date(date));
+        });
+    }
 
     const onValid = (data:IForm) => {
         if(!schedule){
@@ -58,30 +68,45 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
             setEmptyTagNameError(true);
             return;
         }
-    
-        const scheduleObject = {
-            startDate : schedule.startDate,
-            endDate : schedule.endDate,
-            title : data.title,
-            id: schedule.id,
-            tag : selectedTag.id,
-            contents : data.contents,
-        }
 
-        try{
-            isSchedule ? setSchedule(scheduleObject) : addSchedule(scheduleObject).then((res) => {schedule.id = res;});
-        }catch(error) {
-            alert(isSchedule ? ERROR.FAILED_TO_UPDATE_SCHEDULE : ERROR.FAILED_TO_ADD_SCHEDULE);
-            return;
-        }
-      
-        schedule.title = data.title;
-        schedule.tag = selectedTag;
-        schedule.contents = data.contents;
+        const dates = getAllSelectedDates();
         
-        (selectedDate && !isSchedule) && selectedDate.scheduleList.push(schedule);
-        onOverlayClick();
+        if(!dates || dates.length === 0) return;
+  
+        dates.forEach((date) => {
+            // endDate 변화 감지 후 업데이트
+            // cellobjects에서 currentDate에 해당하는 schedule리스트 업데이트
+            // 업데이트 일 경우 schedule 객체도 업데이트
+
+            const scheduleObject = {
+                currentDate : format(date, 'yyyy-MM-dd HH:mm:ss'),
+                startDate : format(schedule.currentDate, 'yyyy-MM-dd') !== format(date, 'yyyy-MM-dd') ? format(schedule.currentDate, 'yyyy-MM-dd HH:mm:ss') : format(schedule.startDate, 'yyyy-MM-dd HH:mm:ss'), // 스케줄이 시작된 곳
+                endDate : format(schedule.endDate, 'yyyy-MM-dd HH:mm:ss'),
+                title : data.title,
+                id: schedule.id,
+                tag : selectedTag.id,
+                contents : data.contents,
+            }
+ 
+        })
+
+
+        // try{
+        //     isSchedule ? setSchedule(scheduleObject) : addSchedule(scheduleObject).then((res) => {schedule.id = res;});
+        // }catch(error) {
+        //     alert(isSchedule ? ERROR.FAILED_TO_UPDATE_SCHEDULE : ERROR.FAILED_TO_ADD_SCHEDULE);
+        //     return;
+        // }
+      
+        // schedule.title = data.title;
+        // schedule.tag = selectedTag;
+        // schedule.contents = data.contents;
+        
+        // (selectedDate && !isSchedule) && selectedDate.scheduleList.push(schedule);
+        // onOverlayClick();
     }
+
+
 
     const setTagInputState = (event: React.MouseEvent<HTMLElement>) => {
         if(event.target instanceof SVGElement) { setTagInput(false); return; }

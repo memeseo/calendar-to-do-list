@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const Wrapper = styled.div<{$endDateToggle:boolean}>`
+export const Wrapper = styled.div`
     width: 100%;
     height: 100%;
     line-height: 100%;
@@ -10,10 +10,6 @@ export const Wrapper = styled.div<{$endDateToggle:boolean}>`
     align-items: center;
     font-size: 14px;
     font-weight: 350;
-
-    .react-datepicker__day {
-        pointer-events: ${(props) => !props.$endDateToggle && 'none'};
-    }
 
     .react-datepicker__input-container input{
         padding : 0 2%;
@@ -111,7 +107,7 @@ export const DatePrickerHeader = styled.div`
 
 `;
 
-export const ShowDate = styled.div<{$endDateToggle:boolean}>`
+export const ShowDate = styled.div`
     text-align: left;
     height: 25px;
     line-height: 25px;
@@ -127,14 +123,5 @@ export const ShowDate = styled.div<{$endDateToggle:boolean}>`
         padding : 0 2%;
         
     }
-    input:nth-child(1){
-        float: ${(prop)=> prop.$endDateToggle && 'left'};
-        margin-right: ${(prop)=> prop.$endDateToggle && '4%'};
-        width: ${(prop)=> prop.$endDateToggle ? '45%' : '94%'};
-    }
 
-    input:nth-child(2){
-        width: ${(prop)=> prop.$endDateToggle ? '45%' : '94%'};
-       
-    }
 `;
