@@ -11,7 +11,6 @@ import { getSchedulesByDate } from 'apis/ScheduleApi';
 import store from 'reducer/index';
 import { fetchCalendar } from 'reducer/calendar';
 import { setLoading } from 'reducer/ui';
-import { setTime } from 'utils/ScheduleUtil';
 
 interface Props {
     currentCalendar : CalendarObject
@@ -27,7 +26,7 @@ export const CalendarCells = ({currentCalendar}:Props) => {
     const getDays = async () => {
         currentCalendar.cells = [];
         let days = currentCalendar.cells,
-            day = setTime(startDate),
+            day = startDate,
             promises = [];
     
         while (day <= endDate) {
@@ -41,7 +40,7 @@ export const CalendarCells = ({currentCalendar}:Props) => {
         scheduleList.forEach((schedules, index) => {
             days[index].scheduleList = schedules;
         });
-       
+  
         return days;
     };
 

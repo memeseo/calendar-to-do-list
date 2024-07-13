@@ -4,20 +4,19 @@ import { ScheduleObject } from "model/Schedule";
 import { Wrapper } from 'asset/DatePickerWrapper';
 import { ko } from "date-fns/locale/ko";
 import { useState } from "react";
-import { setTime } from 'utils/ScheduleUtil';
 
 interface Props {
     schedule : ScheduleObject;
+    endDate : Date;
+    setEndDate(endDate:Date): void;
 }
 
 
-export const DatePickerWrapper = ({ schedule } : Props) => {
+export const DatePickerWrapper = ({ schedule, endDate, setEndDate } : Props) => {
     registerLocale("ko", ko);
-    const [endDate , setEndDate] = useState(schedule.endDate);
 
     const setChangeDate = async (dates:any) => {
         let date = dates.length > 1 ? dates[0] : dates;
-        date = setTime(date);
 
         setEndDate(date);
         schedule.endDate = date; 

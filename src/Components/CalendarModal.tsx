@@ -20,7 +20,9 @@ import { addToTags } from 'reducer/tag';
 import { IoTrashOutline } from "react-icons/io5";
 import { ERROR } from 'constants/Messages';
 import { DatePickerWrapper } from 'Components/DatePickerWrapper';
-import { setTime } from 'utils/ScheduleUtil';
+import uuid from 'react-uuid';
+import {setTime, getAllSelectedDates } from 'utils/ScheduleUtil';
+import { Timestamp } from "firebase/firestore";
 
 
 interface Props {
@@ -39,7 +41,7 @@ interface IForm {
 
 export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, selectedSchedule} : Props) => {
     const isSchedule = !!selectedSchedule,
-          schedule   = selectedDate && !isSchedule ? new ScheduleObject(selectedDate.startDate, selectedDate.startDate, selectedDate.startDate, null, '', '', '') : selectedSchedule,
+          schedule   = selectedDate && !isSchedule ? new ScheduleObject(selectedDate.startDate, selectedDate.startDate, selectedDate.startDate, '', null, '', '', '') : selectedSchedule,
           tags       = useSelector((state:RootState) => state?.tag.tags),
           currentTag = tags.find(tag => tag?.name === schedule?.tag?.name);
     const { register, handleSubmit, formState: { errors }} = useForm<IForm>();
@@ -47,20 +49,11 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
     const [tagName, setTagName] = useState("");
     const [selectedTag, setSelectedTag] = useState<Tag | null>(currentTag ? currentTag : null);
     const [emptyTagNameError, setEmptyTagNameError] = useState<boolean>(false);
-
-    const getAllSelectedDates = () => {
-        if(!schedule){
-            return;
-        }
-
-        const dates = eachDayOfInterval({ start: schedule.currentDate, end: schedule.endDate });
-        return dates.map(date => {
-            return setTime(new Date(date));
-        });
-    }
+    const [endDate, setEndDate] = useState(schedule?.endDate);
+    const calendar = useSelector((state:RootState) => state?.calendar.calendar);
 
     const onValid = (data:IForm) => {
-        if(!schedule){
+        if(!schedule || !endDate){
             return;
         }
 
@@ -69,41 +62,63 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
             return;
         }
 
-        const dates = getAllSelectedDates();
+        const dates = getAllSelectedDates(schedule.currentDate, endDate);
         
         if(!dates || dates.length === 0) return;
-  
-        dates.forEach((date) => {
-            // endDate 변화 감지 후 업데이트
-            // cellobjects에서 currentDate에 해당하는 schedule리스트 업데이트
-            // 업데이트 일 경우 schedule 객체도 업데이트
 
-            const scheduleObject = {
-                currentDate : format(date, 'yyyy-MM-dd HH:mm:ss'),
-                startDate : format(schedule.currentDate, 'yyyy-MM-dd') !== format(date, 'yyyy-MM-dd') ? format(schedule.currentDate, 'yyyy-MM-dd HH:mm:ss') : format(schedule.startDate, 'yyyy-MM-dd HH:mm:ss'), // 스케줄이 시작된 곳
-                endDate : format(schedule.endDate, 'yyyy-MM-dd HH:mm:ss'),
-                title : data.title,
-                id: schedule.id,
-                tag : selectedTag.id,
-                contents : data.contents,
+        const createTime = Timestamp.now();
+
+        try{
+            
+            if(isSchedule){
+                const scheduleObject = {
+                    currentDate : format(schedule.currentDate, 'yyyy-MM-dd') ,
+                    startDate : format(schedule.startDate, 'yyyy-MM-dd'), // 스케줄이 시작된 곳
+                    endDate : format(endDate, 'yyyy-MM-dd'),
+                    title : data.title,
+                    id: schedule.id,
+                    tag : selectedTag.id,
+                    contents : data.contents,
+                    createTime : createTime
+                }
+
+                setSchedule(scheduleObject);
+
+            }else{
+    
+                const id = uuid();
+
+                dates.forEach((selectedSchedule) => {
+                    const scheduleObject = {
+                        currentDate : format(selectedSchedule, 'yyyy-MM-dd'),
+                        startDate : format(schedule.currentDate, 'yyyy-MM-dd') !== format(selectedSchedule, 'yyyy-MM-dd') ? format(schedule.currentDate, 'yyyy-MM-dd') : format(schedule.startDate, 'yyyy-MM-dd'), // 스케줄이 시작된 곳
+                        endDate : format(endDate, 'yyyy-MM-dd'),
+                        title : data.title,
+                        id: id,
+                        tag : selectedTag.id,
+                        contents : data.contents,
+                        createTime : createTime
+                    }
+                    
+                    addSchedule(scheduleObject);
+                    
+                    schedule.title = data.title;
+                    schedule.tag = selectedTag;
+                    schedule.contents = data.contents;
+                    schedule.currentDate = new Date(scheduleObject.currentDate);
+                    schedule.startDate = new Date(scheduleObject.startDate);
+                    schedule.endDate = new Date(scheduleObject.endDate);
+                    schedule.id = id;
+                })
+    
+                //selectedDate && selectedDate.scheduleList.push(schedule);
             }
- 
-        })
+        }catch(error){
+            alert(isSchedule ? ERROR.FAILED_TO_UPDATE_SCHEDULE : ERROR.FAILED_TO_ADD_SCHEDULE);
+            return;
+        }
 
-
-        // try{
-        //     isSchedule ? setSchedule(scheduleObject) : addSchedule(scheduleObject).then((res) => {schedule.id = res;});
-        // }catch(error) {
-        //     alert(isSchedule ? ERROR.FAILED_TO_UPDATE_SCHEDULE : ERROR.FAILED_TO_ADD_SCHEDULE);
-        //     return;
-        // }
-      
-        // schedule.title = data.title;
-        // schedule.tag = selectedTag;
-        // schedule.contents = data.contents;
-        
-        // (selectedDate && !isSchedule) && selectedDate.scheduleList.push(schedule);
-        // onOverlayClick();
+        onOverlayClick();
     }
 
 
@@ -221,7 +236,7 @@ export const CalendarModal = ({isModalOpen, onOverlayClick, selectedDate, select
                               
                                 <div className="contents">
                                     {
-                                     schedule && <DatePickerWrapper schedule={schedule}></DatePickerWrapper>
+                                     (schedule && endDate) && <DatePickerWrapper schedule={schedule} endDate={endDate} setEndDate={setEndDate}></DatePickerWrapper>
                                     }
                                 </div>
 

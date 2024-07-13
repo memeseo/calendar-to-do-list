@@ -4,21 +4,25 @@ export class ScheduleObject {
     _currentDate : Date;
     _startDate : Date;
     _endDate : Date;
+    _createTime : string;
     _tag : Tag | null;
     _id: string;
     _title : string;
     _contents : string;
 
 
-    constructor(currentDate:Date, startDate:Date, endDate:Date, tag:Tag | null, id:string, title:string, contents:string){
+
+    constructor(currentDate:Date, startDate:Date, endDate:Date, createTime:Date | string, tag:Tag | null, id:string, title:string, contents:string){
         this._currentDate = currentDate;
         this._startDate = startDate;
         this._endDate = endDate;
+        this._createTime = '';
         this._tag = tag;
         this._id = id;
         this._title = title;
         this._contents = contents;
     }
+
     get currentDate(){
         return this._startDate;
     }
